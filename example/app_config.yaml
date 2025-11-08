@@ -1,0 +1,441 @@
+# ============================================
+# Flutter Grist Widgets - App Configuration
+# Complete Example with Must-Have Features
+# ============================================
+
+# ============================================
+# Application Configuration
+# ============================================
+app:
+  name: "My Business App"
+  version: "1.0.0"
+
+  # Error Handling
+  error_handling:
+    show_error_details: true  # Set to false in production
+    default_error_message: "Something went wrong. Please try again."
+    retry_enabled: true
+
+  # Loading States
+  loading:
+    show_skeleton: true  # Show skeleton screens while loading
+    spinner_type: "circular"  # or "linear"
+    timeout_seconds: 30
+
+# ============================================
+# Grist Connection
+# ============================================
+grist:
+  base_url: "https://docs.getgrist.com"
+  api_key: "your_api_key_here"
+  document_id: "your_doc_id"
+
+# ============================================
+# Authentication
+# ============================================
+auth:
+  # Users table configuration
+  users_table: "Users"
+  users_table_schema:
+    email_field: "email"
+    password_field: "password_hash"
+    role_field: "role"  # Values: 'admin', 'manager', 'user'
+    active_field: "active"
+
+  # Session management
+  session:
+    timeout_minutes: 60
+    remember_me: true
+    auto_logout_on_timeout: true
+
+  # Login page configuration
+  login_page:
+    title: "Login"
+    logo: "assets/logo.png"
+    background_image: "assets/login_bg.png"
+    welcome_text: "Welcome to My Business App"
+
+# ============================================
+# Theme
+# ============================================
+theme:
+  primary_color: "#2196F3"
+  secondary_color: "#FFC107"
+  drawer_background: "#263238"
+  drawer_text_color: "#FFFFFF"
+  error_color: "#F44336"
+  success_color: "#4CAF50"
+
+# ============================================
+# Navigation (Left Drawer)
+# ============================================
+navigation:
+  # Drawer header
+  drawer_header:
+    title: "My Business App"
+    subtitle: "Dashboard"
+    background_image: "assets/drawer_header.png"
+
+  # Drawer footer (user profile & logout)
+  drawer_footer:
+    show_user_info: true  # Display logged-in user email/name
+    show_logout_button: true
+    logout_confirmation: true  # Show confirmation dialog before logout
+
+# ============================================
+# Pages
+# ============================================
+pages:
+  # ----------------
+  # Home / Welcome Page
+  # ----------------
+  - id: "home"
+    type: "front"
+    title: "Home"
+    menu:
+      label: "Home"
+      icon: "home"
+      order: 1
+    content:
+      text: |
+        Welcome to My Business App
+
+        This application provides easy access to your business data.
+        Use the menu to navigate between different sections.
+      image: "assets/welcome.png"
+      alignment: "center"
+    visible_if: "true"  # Always visible to authenticated users
+
+  # ----------------
+  # Products - Master View (Tabular)
+  # ----------------
+  - id: "products_master"
+    type: "data_master"
+    title: "Products"
+    menu:
+      label: "Products"
+      icon: "inventory"
+      order: 2
+    grist:
+      table: "Products"
+
+      # Record number column configuration
+      record_number:
+        enabled: true
+        column_label: "N"
+        sortable: true
+        keep_original_after_filter: true
+
+      # Columns to display
+      columns:
+        - name: "id"
+          label: "ID"
+          visible: true
+          sortable: true
+          width: 80
+
+        - name: "name"
+          label: "Product Name"
+          visible: true
+          sortable: true
+          searchable: true
+
+        - name: "category"
+          label: "Category"
+          visible: true
+          sortable: true
+
+        - name: "price"
+          label: "Price"
+          visible: true
+          sortable: true
+          format: "currency"
+
+        - name: "stock"
+          label: "Stock"
+          visible: true
+          sortable: true
+          visible_if: "user.role == 'admin' OR user.role == 'manager'"
+
+        - name: "supplier"
+          label: "Supplier"
+          visible: true
+          sortable: true
+
+      # Search and filter
+      enable_search: true
+      enable_filter: true
+
+      # Pagination
+      pagination:
+        enabled: true
+        page_size: 20
+
+      # Action on row click
+      on_row_click:
+        navigate_to: "products_detail"
+        pass_param: "id"
+
+    visible_if: "user.active == true"
+
+  # ----------------
+  # Products - Detail View (Form)
+  # ----------------
+  - id: "products_detail"
+    type: "data_detail"
+    title: "Product Details"
+    menu:
+      visible: false  # Don't show in drawer menu
+
+    grist:
+      table: "Products"
+      record_id_param: "id"
+
+      # Form layout
+      form:
+        layout: "single_column"
+
+        fields:
+          - name: "id"
+            label: "Product ID"
+            type: "integer"
+            readonly: true
+            visible: true
+
+          - name: "name"
+            label: "Product Name"
+            type: "text"
+            readonly: true
+            visible: true
+            validators:
+              - type: "required"
+                message: "Product name is required"
+              - type: "minLength"
+                value: 3
+                message: "Name must be at least 3 characters"
+
+          - name: "description"
+            label: "Description"
+            type: "text"
+            multiline: true
+            readonly: true
+            visible: true
+
+          - name: "category"
+            label: "Category"
+            type: "text"
+            readonly: true
+            visible: true
+
+          - name: "price"
+            label: "Price"
+            type: "numeric"
+            readonly: true
+            visible: true
+            validators:
+              - type: "required"
+              - type: "range"
+                min: 0
+                max: 999999
+                message: "Price must be between 0 and 999999"
+              - type: "regex"
+                pattern: "^\\d+(\\.\\d{1,2})?$"
+                message: "Price must be a valid number with up to 2 decimals"
+            format:
+              type: "currency"
+              currency: "EUR"
+              decimals: 2
+
+          - name: "stock"
+            label: "Stock Quantity"
+            type: "integer"
+            readonly: true
+            visible_if: "user.role == 'admin' OR user.role == 'manager'"
+            validators:
+              - type: "integer"
+              - type: "range"
+                min: 0
+
+          - name: "supplier"
+            label: "Supplier"
+            type: "text"
+            readonly: true
+            visible: true
+
+          - name: "supplier_email"
+            label: "Supplier Email"
+            type: "text"
+            readonly: true
+            visible: true
+            validators:
+              - type: "email"
+                message: "Please enter a valid email address"
+
+          - name: "created_at"
+            label: "Created"
+            type: "datetime"
+            readonly: true
+            visible: true
+            format:
+              type: "datetime"
+              pattern: "dd/MM/yyyy HH:mm"
+
+        # Back button configuration
+        back_button:
+          enabled: true
+          label: "Back to Products"
+          navigate_to: "products_master"
+
+  # ----------------
+  # Customers - Master View
+  # ----------------
+  - id: "customers_master"
+    type: "data_master"
+    title: "Customers"
+    menu:
+      label: "Customers"
+      icon: "people"
+      order: 3
+    grist:
+      table: "Customers"
+      record_number:
+        enabled: true
+        column_label: "N"
+        sortable: true
+      columns:
+        - name: "id"
+          label: "ID"
+          visible: true
+          sortable: true
+        - name: "name"
+          label: "Customer Name"
+          visible: true
+          sortable: true
+          searchable: true
+        - name: "email"
+          label: "Email"
+          visible: true
+          sortable: true
+        - name: "phone"
+          label: "Phone"
+          visible: true
+        - name: "total_orders"
+          label: "Total Orders"
+          visible: true
+          sortable: true
+          visible_if: "user.role == 'admin'"
+      enable_search: true
+      pagination:
+        enabled: true
+        page_size: 20
+      on_row_click:
+        navigate_to: "customers_detail"
+        pass_param: "id"
+    visible_if: "user.role == 'admin' OR user.role == 'manager'"
+
+  # ----------------
+  # Customers - Detail View
+  # ----------------
+  - id: "customers_detail"
+    type: "data_detail"
+    title: "Customer Details"
+    menu:
+      visible: false
+    grist:
+      table: "Customers"
+      record_id_param: "id"
+      form:
+        layout: "single_column"
+        fields:
+          - name: "id"
+            label: "Customer ID"
+            type: "integer"
+            readonly: true
+          - name: "name"
+            label: "Name"
+            type: "text"
+            readonly: true
+            validators:
+              - type: "required"
+          - name: "email"
+            label: "Email"
+            type: "text"
+            readonly: true
+            validators:
+              - type: "required"
+              - type: "email"
+          - name: "phone"
+            label: "Phone"
+            type: "text"
+            readonly: true
+            validators:
+              - type: "regex"
+                pattern: "^\\+?[0-9\\s\\-\\(\\)]+$"
+                message: "Invalid phone number format"
+          - name: "address"
+            label: "Address"
+            type: "text"
+            multiline: true
+            readonly: true
+          - name: "total_orders"
+            label: "Total Orders"
+            type: "integer"
+            readonly: true
+            visible_if: "user.role == 'admin'"
+          - name: "created_at"
+            label: "Customer Since"
+            type: "datetime"
+            readonly: true
+            format:
+              type: "datetime"
+              pattern: "dd/MM/yyyy"
+        back_button:
+          enabled: true
+          navigate_to: "customers_master"
+
+  # ----------------
+  # Admin Dashboard
+  # ----------------
+  - id: "admin_dashboard"
+    type: "admin_dashboard"
+    title: "Administration"
+    menu:
+      label: "Admin"
+      icon: "admin_panel_settings"
+      order: 99
+    visible_if: "user.role == 'admin'"
+
+    widgets:
+      # Active/Logged-in Users Widget
+      - type: "active_users"
+        title: "Currently Logged In Users"
+        refresh_interval: 30  # seconds
+        show_columns:
+          - "email"
+          - "role"
+          - "last_activity"
+
+      # Database Summary Widget
+      - type: "database_summary"
+        title: "Database Overview"
+        grist_tables:  # List all tables to monitor
+          - "Products"
+          - "Customers"
+          - "Users"
+          - "Orders"
+        display:
+          show_table_names: true
+          show_record_counts: true
+          show_last_modified: true
+          sortable: true
+          sort_by: "table_name"  # or "record_count"
+        refresh_interval: 60  # seconds
+
+      # System Info Widget
+      - type: "system_info"
+        title: "System Information"
+        show:
+          - "app_version"
+          - "grist_connection_status"
+          - "total_users"
+          - "active_sessions"

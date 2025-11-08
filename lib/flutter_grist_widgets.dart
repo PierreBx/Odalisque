@@ -1,12 +1,13 @@
-/// A Flutter library for visualizing and editing data tables stored in Grist.
+/// A YAML-driven Flutter application generator for Grist.
 ///
-/// This library provides widgets that make it easy to display and edit Grist data
-/// in your Flutter applications. Simply provide a Grist object ID and configure
-/// which attributes should be readable or writable.
+/// Build complete data-driven applications with authentication, navigation,
+/// and forms from a simple YAML configuration file.
 library flutter_grist_widgets;
 
 // Core exports
-export 'src/models/grist_config.dart';
-export 'src/widgets/grist_table_widget.dart';
-export 'src/widgets/grist_form_widget.dart';
-export 'src/services/grist_api_service.dart';
+export 'src/grist_app.dart';
+export 'src/config/app_config.dart';
+export 'src/config/yaml_loader.dart';
+export 'src/models/user_model.dart';
+export 'src/services/grist_service.dart';
+export 'src/providers/auth_provider.dart';
