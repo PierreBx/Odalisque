@@ -49,7 +49,7 @@ case "$1" in
         ;;
     shell)
         echo -e "${BLUE}Opening interactive shell...${NC}"
-        docker-compose run --rm flutter-shell /bin/bash
+        docker-compose run --rm flutter /bin/bash
         ;;
     all)
         echo -e "${BLUE}Running full test suite...${NC}"

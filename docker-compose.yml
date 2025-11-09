@@ -1,0 +1,79 @@
+version: '3.8'
+
+services:
+  # Grist service - self-hosted spreadsheet database
+  grist:
+    image: gristlabs/grist:latest
+    container_name: grist_server
+    ports:
+      - "8484:8484"
+    volumes:
+      - ./grist-module/grist-data:/persist
+    environment:
+      - GRIST_SESSION_SECRET=${GRIST_SESSION_SECRET:-your-secret-key-here}
+      - GRIST_SINGLE_ORG=docs
+      - APP_HOME_URL=${GRIST_APP_HOME_URL:-http://localhost:8484}
+      - GRIST_SANDBOX_FLAVOR=unsandboxed
+    restart: unless-stopped
+    networks:
+      - grist-network
+
+  # Flutter development environment
+  flutter:
+    build:
+      context: ./flutter-module
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: flutter_dev
+    volumes:
+      - ./flutter-module:/app
+      - flutter_pub_cache:/home/flutterdev/.pub-cache
+    working_dir: /app
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    networks:
+      - grist-network
+
+  # Flutter test runner
+  flutter-test:
+    build:
+      context: ./flutter-module
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: flutter_test
+    volumes:
+      - ./flutter-module:/app
+      - flutter_pub_cache:/home/flutterdev/.pub-cache
+    working_dir: /app
+    command: flutter test --reporter expanded
+    networks:
+      - grist-network
+
+  # Flutter analyzer
+  flutter-analyze:
+    build:
+      context: ./flutter-module
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: flutter_analyze
+    volumes:
+      - ./flutter-module:/app
+      - flutter_pub_cache:/home/flutterdev/.pub-cache
+    working_dir: /app
+    command: flutter analyze
+    networks:
+      - grist-network
+
+volumes:
+  flutter_pub_cache:
+
+networks:
+  grist-network:
+    driver: bridge

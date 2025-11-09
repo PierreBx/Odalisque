@@ -10,9 +10,6 @@ This guide covers the typical daily workflow for developing with Flutter Grist W
 # Navigate to project directory
 cd flutterGristAPI
 
-# Navigate to grist module
-cd grist-module
-
 # Start Grist (if not already running)
 ./docker-test.sh grist-start
 ```
@@ -427,12 +424,9 @@ docker ps -s
 
 ## Cheat Sheet - Quick Reference
 
-**Note:** Run all docker-test.sh commands from the `grist-module/` directory.
+**Note:** Run all docker-test.sh commands from the project root directory.
 
 ```bash
-# NAVIGATE
-cd grist-module                     # Go to grist module
-
 # START
 ./docker-test.sh grist-start       # Start Grist
 ./docker-test.sh build              # Build Flutter (first time only)
@@ -455,9 +449,8 @@ git commit -m "message"             # Commit
 git push                            # Push to remote
 
 # MAINTENANCE
-cd grist-module                     # If needed
-./docker-test.sh grist-restart      # Restart Grist
-tar -czf backup.tar.gz grist-data/  # Backup data
+./docker-test.sh grist-restart          # Restart Grist
+tar -czf backup.tar.gz grist-module/grist-data/  # Backup data
 
 # END
 ./docker-test.sh stop-all           # Stop everything

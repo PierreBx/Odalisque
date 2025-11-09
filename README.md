@@ -4,22 +4,34 @@ A Flutter library for building complete data-driven applications from Grist usin
 
 ## 🗂️ Project Structure
 
-This project is organized into three modules:
+This project is organized into three modules with Docker configuration at the root:
 
 ```
 flutterGristAPI/
-├── grist-module/           # Grist server and Docker infrastructure
-├── flutter-module/         # Flutter library source code
-└── documentation-module/   # Complete documentation
+├── docker-compose.yml          # Docker services configuration
+├── docker-test.sh              # Helper script for Docker commands
+├── .env.example                # Environment configuration template
+├── grist-module/               # Grist data storage
+│   └── grist-data/             # Persistent Grist documents
+├── flutter-module/             # Flutter library source code
+│   ├── lib/                    # Library source
+│   ├── test/                   # Unit tests
+│   ├── Dockerfile              # Flutter dev environment
+│   └── pubspec.yaml            # Dependencies
+└── documentation-module/       # Complete documentation
+    ├── QUICKSTART.md
+    ├── DAILY_USAGE.md
+    └── README_DOCKER.md
 ```
 
 ### 📦 Modules
 
 | Module | Description | Quick Start |
 |--------|-------------|-------------|
-| **[grist-module/](grist-module/)** | Grist server, Docker setup, data storage | [grist-module/README.md](grist-module/README.md) |
-| **[flutter-module/](flutter-module/)** | Flutter library source code, tests | [flutter-module/README.md](flutter-module/README.md) |
+| **[grist-module/](grist-module/)** | Grist persistent data storage | [grist-module/README.md](grist-module/README.md) |
+| **[flutter-module/](flutter-module/)** | Flutter library source code, tests, Dockerfile | [flutter-module/README.md](flutter-module/README.md) |
 | **[documentation-module/](documentation-module/)** | All documentation and guides | [documentation-module/README.md](documentation-module/README.md) |
+| **Root** | Docker Compose, helper scripts, environment config | See above |
 
 ## 🚀 Quick Start
 
@@ -31,17 +43,20 @@ flutterGristAPI/
    cat QUICKSTART.md
    ```
 
-2. **Start Grist server:**
+2. **Set up environment:**
    ```bash
-   cd grist-module
    cp .env.example .env
-   # Edit .env and set GRIST_SESSION_SECRET
+   # Edit .env and set GRIST_SESSION_SECRET to a random string
+   ```
+
+3. **Start Grist server:**
+   ```bash
    ./docker-test.sh grist-start
    ```
 
-3. **Access Grist:** http://localhost:8484
+4. **Access Grist:** http://localhost:8484
 
-4. **Build and test Flutter:**
+5. **Build and test Flutter:**
    ```bash
    ./docker-test.sh build
    ./docker-test.sh all
@@ -51,7 +66,6 @@ flutterGristAPI/
 
 ```bash
 # Start Grist
-cd grist-module
 ./docker-test.sh grist-start
 
 # Make code changes in flutter-module/
@@ -95,19 +109,15 @@ All documentation is in the **[documentation-module/](documentation-module/)** d
 
 ### grist-module/
 
-**Contains:** Docker infrastructure for running Grist server
+**Contains:** Grist data storage
 
-- docker-compose.yml - Service definitions
-- docker-test.sh - Helper script
-- grist-data/ - Persistent data storage
-- Dockerfile - Flutter test environment
-- .env.example - Configuration template
+- grist-data/ - Persistent data storage for Grist documents
 
-**Purpose:** Provides a self-hosted Grist server with persistent data storage, plus Docker containers for running Flutter tests.
+**Purpose:** Provides persistent storage for Grist documents and data.
 
 ### flutter-module/
 
-**Contains:** Flutter library source code
+**Contains:** Flutter library source code and Docker build configuration
 
 - lib/ - Library source code
   - src/config/ - Configuration parsers
@@ -119,6 +129,7 @@ All documentation is in the **[documentation-module/](documentation-module/)** d
 - test/ - Unit tests (77 tests)
 - example/ - Example configurations
 - pubspec.yaml - Dependencies
+- Dockerfile - Flutter development environment with proper user management
 
 **Purpose:** The actual Flutter library that developers import to build Grist-powered apps.
 
@@ -139,9 +150,9 @@ All documentation is in the **[documentation-module/](documentation-module/)** d
 
 | Task | Command | Location |
 |------|---------|----------|
-| Start Grist | `./docker-test.sh grist-start` | grist-module/ |
-| Run tests | `./docker-test.sh all` | grist-module/ |
-| View logs | `./docker-test.sh grist-logs` | grist-module/ |
+| Start Grist | `./docker-test.sh grist-start` | Root |
+| Run tests | `./docker-test.sh all` | Root |
+| View logs | `./docker-test.sh grist-logs` | Root |
 | Edit code | Use your IDE | flutter-module/ |
 | Read docs | Open markdown files | documentation-module/ |
 
