@@ -36,6 +36,12 @@ A Flutter library for building complete data-driven applications from Grist usin
 
 ## Getting Started
 
+### 📚 Quick Navigation
+
+- **🚀 [QUICKSTART.md](QUICKSTART.md)** - First time setup guide (Docker + Grist)
+- **📅 [DAILY_USAGE.md](DAILY_USAGE.md)** - Daily development workflow
+- **🐳 [README_DOCKER.md](README_DOCKER.md)** - Detailed Docker documentation
+
 ### Installation
 
 Add this to your package's `pubspec.yaml` file:
