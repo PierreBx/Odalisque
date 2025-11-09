@@ -11,3 +11,4 @@ export 'src/config/yaml_loader.dart';
 export 'src/models/user_model.dart';
 export 'src/services/grist_service.dart';
 export 'src/providers/auth_provider.dart';
+export 'src/utils/validators.dart';

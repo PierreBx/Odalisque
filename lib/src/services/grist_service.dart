@@ -2,7 +2,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../config/app_config.dart';
 import '../models/user_model.dart';
-import 'package:crypto/crypto.dart';
+import 'package:bcrypt/bcrypt.dart';
 
 /// Service for interacting with the Grist API.
 class GristService {
@@ -34,15 +34,33 @@ class GristService {
   }
 
   /// Fetches a single record by ID.
+  /// Uses the Grist API's direct record endpoint for efficiency.
   Future<Map<String, dynamic>?> fetchRecord(
       String tableName, int recordId) async {
-    final records = await fetchRecords(tableName);
+    final url = Uri.parse(
+      '${config.baseUrl}/api/docs/${config.documentId}/tables/$tableName/records/$recordId',
+    );
+
     try {
-      return records.firstWhere(
-        (r) => r['id'] == recordId,
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer ${config.apiKey}',
+          'Content-Type': 'application/json',
+        },
       );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return data as Map<String, dynamic>?;
+      } else if (response.statusCode == 404) {
+        return null; // Record not found
+      } else {
+        throw Exception(
+            'Failed to fetch record $recordId from $tableName: ${response.statusCode}');
+      }
     } catch (e) {
-      return null;
+      throw Exception('Error fetching record: $e');
     }
   }
 
@@ -87,16 +105,16 @@ class GristService {
       final records = await fetchRecords(authSettings.usersTable);
       final schema = authSettings.usersTableSchema;
 
-      // Hash the password
-      final passwordHash = _hashPassword(password);
-
       // Find matching user
       for (var record in records) {
         final fields = record['fields'] as Map<String, dynamic>? ?? {};
         final recordEmail = fields[schema.emailField]?.toString();
         final recordPasswordHash = fields[schema.passwordField]?.toString();
 
-        if (recordEmail == email && recordPasswordHash == passwordHash) {
+        // Verify password using bcrypt
+        if (recordEmail == email &&
+            recordPasswordHash != null &&
+            BCrypt.checkpw(password, recordPasswordHash)) {
           return User.fromGristRecord(
             record,
             schema.emailField,
@@ -157,11 +175,15 @@ class GristService {
     }
   }
 
-  /// Simple password hashing (SHA256).
-  /// Note: In production, use proper password hashing like bcrypt.
-  String _hashPassword(String password) {
-    final bytes = utf8.encode(password);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
+  /// Hashes a password using bcrypt with a salt.
+  /// This is suitable for production use.
+  ///
+  /// Example usage for creating a password hash to store in Grist:
+  /// ```dart
+  /// final hash = GristService.hashPassword('myPassword123');
+  /// // Store this hash in your Grist users table
+  /// ```
+  static String hashPassword(String password) {
+    return BCrypt.hashpw(password, BCrypt.gensalt());
   }
 }
