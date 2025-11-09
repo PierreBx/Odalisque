@@ -64,6 +64,41 @@ class GristService {
     }
   }
 
+  /// Creates a new record.
+  /// Returns the ID of the newly created record.
+  Future<int> createRecord(
+    String tableName,
+    Map<String, dynamic> fields,
+  ) async {
+    final url = Uri.parse(
+      '${config.baseUrl}/api/docs/${config.documentId}/tables/$tableName/records',
+    );
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer ${config.apiKey}',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode({
+        'records': [
+          {'fields': fields}
+        ]
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      final records = data['records'] as List<dynamic>?;
+      if (records != null && records.isNotEmpty) {
+        return records[0]['id'] as int;
+      }
+      throw Exception('Failed to get created record ID');
+    } else {
+      throw Exception('Failed to create record: ${response.statusCode}');
+    }
+  }
+
   /// Updates a record.
   Future<void> updateRecord(
     String tableName,
@@ -92,6 +127,29 @@ class GristService {
 
     if (response.statusCode != 200) {
       throw Exception('Failed to update record: ${response.statusCode}');
+    }
+  }
+
+  /// Deletes a record.
+  Future<void> deleteRecord(
+    String tableName,
+    int recordId,
+  ) async {
+    final url = Uri.parse(
+      '${config.baseUrl}/api/docs/${config.documentId}/tables/$tableName/records',
+    );
+
+    final response = await http.delete(
+      url,
+      headers: {
+        'Authorization': 'Bearer ${config.apiKey}',
+        'Content-Type': 'application/json',
+      },
+      body: json.encode([recordId]),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Failed to delete record: ${response.statusCode}');
     }
   }
 

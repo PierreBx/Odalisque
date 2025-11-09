@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../config/app_config.dart';
 import '../services/grist_service.dart';
+import '../widgets/grist_table_widget.dart';
 
 /// Tabular view of Grist table data.
 class DataMasterPage extends StatefulWidget {
@@ -20,13 +21,43 @@ class DataMasterPage extends StatefulWidget {
 
 class _DataMasterPageState extends State<DataMasterPage> {
   List<Map<String, dynamic>> _records = [];
+  List<Map<String, dynamic>> _filteredRecords = [];
   bool _isLoading = true;
   String? _error;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text.toLowerCase();
+      _applyFilter();
+    });
+  }
+
+  void _applyFilter() {
+    if (_searchQuery.isEmpty) {
+      _filteredRecords = _records;
+    } else {
+      _filteredRecords = _records.where((record) {
+        final fields = record['fields'] as Map<String, dynamic>? ?? {};
+        // Search across all field values
+        return fields.values.any((value) =>
+            value?.toString().toLowerCase().contains(_searchQuery) ?? false);
+      }).toList();
+    }
   }
 
   Future<void> _loadData() async {
@@ -36,7 +67,7 @@ class _DataMasterPageState extends State<DataMasterPage> {
     });
 
     try {
-      final grist = config?['grist'] as Map<String, dynamic>?;
+      final grist = widget.config.config?['grist'] as Map<String, dynamic>?;
       final tableName = grist?['table'] as String?;
 
       if (tableName == null) {
@@ -48,6 +79,7 @@ class _DataMasterPageState extends State<DataMasterPage> {
 
       setState(() {
         _records = records;
+        _applyFilter();
         _isLoading = false;
       });
     } catch (e) {
@@ -60,100 +92,95 @@ class _DataMasterPageState extends State<DataMasterPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
-    if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.error, size: 48, color: Colors.red),
-            const SizedBox(height: 16),
-            Text('Error: $_error'),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _loadData,
-              child: const Text('Retry'),
-            ),
-          ],
-        ),
-      );
-    }
-
     final gristConfig = widget.config.config?['grist'] as Map<String, dynamic>?;
-    final columns =
-        (gristConfig?['columns'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
-            [];
-    final recordNumber = gristConfig?['record_number'] as Map<String, dynamic>?;
-    final showRecordNumber = recordNumber?['enabled'] as bool? ?? false;
-    final recordNumberLabel = recordNumber?['column_label'] as String? ?? 'N';
+    final columns = (gristConfig?['columns'] as List<dynamic>?)
+            ?.map((col) => TableColumnConfig.fromMap(col as Map<String, dynamic>))
+            .toList() ??
+        [];
+    final search = gristConfig?['search'] as Map<String, dynamic>?;
+    final showSearch = search?['enabled'] as bool? ?? true;
+    final createButton = gristConfig?['create_button'] as Map<String, dynamic>?;
+    final showCreateButton = createButton?['enabled'] as bool? ?? false;
 
-    return RefreshIndicator(
-      onRefresh: _loadData,
-      child: _records.isEmpty
-          ? const Center(child: Text('No records found'))
-          : ListView.builder(
-              itemCount: _records.length,
-              itemBuilder: (context, index) {
-                final record = _records[index];
-                final fields = record['fields'] as Map<String, dynamic>? ?? {};
+    return Column(
+      children: [
+        // Search bar
+        if (showSearch)
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: search?['placeholder'] as String? ?? 'Search...',
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                        },
+                      )
+                    : null,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+          ),
 
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: ListTile(
-                    leading: showRecordNumber
-                        ? CircleAvatar(
-                            child: Text('${index + 1}'),
-                          )
-                        : null,
-                    title: Text(_getRecordTitle(fields, columns)),
-                    subtitle: Text(_getRecordSubtitle(fields, columns)),
-                    trailing: const Icon(Icons.chevron_right),
-                    onTap: () {
-                      final onClick =
-                          gristConfig?['on_row_click'] as Map<String, dynamic>?;
-                      if (onClick != null) {
-                        final navigateTo = onClick['navigate_to'] as String?;
-                        final paramField = onClick['pass_param'] as String?;
+        // Results count and create button
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            children: [
+              Text(
+                '${_filteredRecords.length} record${_filteredRecords.length != 1 ? 's' : ''}',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              const Spacer(),
+              if (showCreateButton)
+                ElevatedButton.icon(
+                  onPressed: () {
+                    final navigateTo = createButton?['navigate_to'] as String?;
+                    if (navigateTo != null) {
+                      widget.onNavigate(navigateTo, null);
+                    }
+                  },
+                  icon: const Icon(Icons.add),
+                  label: Text(createButton?['label'] as String? ?? 'Create'),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
 
-                        if (navigateTo != null && paramField != null) {
-                          widget.onNavigate(navigateTo, {
-                            paramField: fields[paramField],
-                          });
-                        }
-                      }
-                    },
-                  ),
-                );
+        // Data table
+        Expanded(
+          child: RefreshIndicator(
+            onRefresh: _loadData,
+            child: GristTableWidget(
+              columns: columns,
+              records: _filteredRecords,
+              isLoading: _isLoading,
+              error: _error,
+              showIdColumn: gristConfig?['show_id'] as bool? ?? false,
+              onRowTap: (record) {
+                final onClick =
+                    gristConfig?['on_row_click'] as Map<String, dynamic>?;
+                if (onClick != null) {
+                  final navigateTo = onClick['navigate_to'] as String?;
+                  final paramField = onClick['pass_param'] as String?;
+                  final fields = record['fields'] as Map<String, dynamic>? ?? {};
+
+                  if (navigateTo != null && paramField != null) {
+                    widget.onNavigate(navigateTo, {
+                      paramField: fields[paramField] ?? record['id'],
+                    });
+                  }
+                }
               },
             ),
+          ),
+        ),
+      ],
     );
-  }
-
-  String _getRecordTitle(
-      Map<String, dynamic> fields, List<Map<String, dynamic>> columns) {
-    if (columns.isEmpty) {
-      return fields.values.first?.toString() ?? 'Record';
-    }
-
-    final firstColumn = columns.first;
-    final fieldName = firstColumn['name'] as String?;
-    return fields[fieldName]?.toString() ?? 'Record';
-  }
-
-  String _getRecordSubtitle(
-      Map<String, dynamic> fields, List<Map<String, dynamic>> columns) {
-    if (columns.length < 2) {
-      return fields['id']?.toString() ?? '';
-    }
-
-    final subtitleParts = columns.skip(1).take(2).map((col) {
-      final fieldName = col['name'] as String?;
-      return fields[fieldName]?.toString() ?? '';
-    }).where((s) => s.isNotEmpty);
-
-    return subtitleParts.join(' • ');
   }
 }

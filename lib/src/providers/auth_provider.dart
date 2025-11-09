@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences.dart';
+import 'dart:async';
 import 'dart:convert';
 import '../models/user_model.dart';
 import '../services/grist_service.dart';
@@ -10,6 +11,8 @@ class AuthProvider extends ChangeNotifier {
   User? _user;
   bool _isLoading = false;
   String? _error;
+  DateTime? _lastActivityTime;
+  Timer? _sessionTimer;
 
   final GristService gristService;
   final AuthSettings authSettings;
@@ -17,12 +20,52 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider({
     required this.gristService,
     required this.authSettings,
-  });
+  }) {
+    _startSessionMonitoring();
+  }
 
   User? get user => _user;
   bool get isAuthenticated => _user != null;
   bool get isLoading => _isLoading;
   String? get error => _error;
+
+  @override
+  void dispose() {
+    _sessionTimer?.cancel();
+    super.dispose();
+  }
+
+  /// Start monitoring session timeout.
+  void _startSessionMonitoring() {
+    final session = authSettings.session;
+    if (session == null || !session.autoLogoutOnTimeout) return;
+
+    // Check every minute
+    _sessionTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      _checkSessionTimeout();
+    });
+  }
+
+  /// Check if session has timed out.
+  void _checkSessionTimeout() {
+    if (_user == null || _lastActivityTime == null) return;
+
+    final session = authSettings.session;
+    if (session == null || !session.autoLogoutOnTimeout) return;
+
+    final timeout = Duration(minutes: session.timeoutMinutes);
+    final now = DateTime.now();
+    final timeSinceActivity = now.difference(_lastActivityTime!);
+
+    if (timeSinceActivity >= timeout) {
+      logout(timedOut: true);
+    }
+  }
+
+  /// Record user activity to reset timeout.
+  void recordActivity() {
+    _lastActivityTime = DateTime.now();
+  }
 
   /// Initialize auth state from saved session.
   Future<void> init() async {
@@ -32,6 +75,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userJson = prefs.getString('user');
+      final lastActivityStr = prefs.getString('last_activity');
 
       if (userJson != null) {
         final userMap = json.decode(userJson) as Map<String, dynamic>;
@@ -42,6 +86,16 @@ class AuthProvider extends ChangeNotifier {
           additionalFields:
               Map<String, dynamic>.from(userMap['additionalFields'] ?? {}),
         );
+
+        // Restore last activity time
+        if (lastActivityStr != null) {
+          _lastActivityTime = DateTime.parse(lastActivityStr);
+
+          // Check if session has already timed out
+          _checkSessionTimeout();
+        } else {
+          _lastActivityTime = DateTime.now();
+        }
       }
     } catch (e) {
       _error = 'Failed to restore session: $e';
@@ -66,10 +120,12 @@ class AuthProvider extends ChangeNotifier {
 
       if (user != null && user.active) {
         _user = user;
+        _lastActivityTime = DateTime.now();
 
         // Save session
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user', json.encode(user.toJson()));
+        await prefs.setString('last_activity', _lastActivityTime!.toIso8601String());
 
         _isLoading = false;
         notifyListeners();
@@ -91,13 +147,20 @@ class AuthProvider extends ChangeNotifier {
   }
 
   /// Logout the current user.
-  Future<void> logout() async {
+  Future<void> logout({bool timedOut = false}) async {
     _user = null;
-    _error = null;
+    _lastActivityTime = null;
+
+    if (timedOut) {
+      _error = 'Session expired due to inactivity';
+    } else {
+      _error = null;
+    }
 
     // Clear saved session
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('user');
+    await prefs.remove('last_activity');
 
     notifyListeners();
   }
