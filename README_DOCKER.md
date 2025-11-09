@@ -1,6 +1,13 @@
 # Flutter Grist Widgets - Docker Setup
 
-This document explains how to test and develop the Flutter Grist Widgets library using Docker.
+This document explains how to run Grist and test the Flutter Grist Widgets library using Docker.
+
+## Overview
+
+This Docker setup provides a complete development and testing environment with:
+- **Grist Server**: Self-hosted spreadsheet-database running at http://localhost:8484
+- **Flutter Testing**: Containerized Flutter SDK for running tests and analysis
+- **Data Persistence**: Grist data stored in `./grist-data` directory on your host machine
 
 ## Prerequisites
 
@@ -9,33 +16,92 @@ This document explains how to test and develop the Flutter Grist Widgets library
 
 ## Quick Start
 
-### 1. Build the Docker Image
+### 1. Set Up Environment (First Time Only)
 
 ```bash
-docker-compose build
+# Copy environment template
+cp .env.example .env
+
+# Edit .env and set a secure session secret
+# GRIST_SESSION_SECRET=your-random-secret-here
 ```
 
-Or use the helper script:
+### 2. Start Grist Server
+
+```bash
+./docker-test.sh grist-start
+```
+
+Grist will be available at **http://localhost:8484**
+
+**Note**: Your Grist data is stored in the `./grist-data` directory and persists between container restarts.
+
+### 3. Build Flutter Docker Image
 
 ```bash
 ./docker-test.sh build
 ```
 
-### 2. Run Tests
+### 4. Run Flutter Tests
 
-**Run all tests:**
 ```bash
 ./docker-test.sh all
 ```
 
-**Run only unit tests:**
-```bash
-./docker-test.sh test
+## Grist Setup and Configuration
+
+### Starting Grist for the First Time
+
+1. **Start Grist server:**
+   ```bash
+   ./docker-test.sh grist-start
+   ```
+
+2. **Access Grist UI:** Open http://localhost:8484 in your browser
+
+3. **Create your first document:**
+   - Click "Add New" to create a Grist document
+   - Set up your tables (e.g., Users table with email, password_hash, role fields)
+
+4. **Generate API Key:**
+   - Click your profile icon → Profile Settings
+   - Go to "API" section
+   - Click "Create API Key"
+   - **Save this key** - you'll need it for your Flutter app configuration
+
+5. **Update your app YAML configuration:**
+   ```yaml
+   grist:
+     base_url: "http://grist:8484"  # Use "grist" hostname within Docker network
+     document_id: "your-document-id-here"
+     api_key: "your-api-key-here"
+     users_table: "Users"
+   ```
+
+### Grist Data Directory Structure
+
+```
+grist-data/
+├── README.md           # Documentation (committed to git)
+└── [Grist files]       # .grist documents and data (gitignored)
 ```
 
-**Run only code analysis:**
+**Important:** The `grist-data` directory contains your database files and is excluded from git (except the README). Back it up regularly!
+
+## Quick Start (Alternative - All Services)
+
+Start everything (Grist + Flutter) at once:
+
 ```bash
-./docker-test.sh analyze
+# Copy environment file
+cp .env.example .env
+
+# Start all services
+./docker-test.sh start-all
+
+# Build Flutter image and run tests
+./docker-test.sh build
+./docker-test.sh all
 ```
 
 ## Available Commands
@@ -46,29 +112,63 @@ Or use the helper script:
 ./docker-test.sh <command>
 ```
 
-**Commands:**
+**Flutter Commands:**
 - `test` - Run unit tests
 - `analyze` - Run Flutter analyzer (check for errors)
 - `shell` - Open interactive bash shell in container
 - `all` - Run both analyze and test
-- `build` - Build the Docker image
-- `clean` - Remove Docker containers and volumes
+- `build` - Build the Flutter Docker image
+
+**Grist Commands:**
+- `grist-start` - Start Grist server (available at http://localhost:8484)
+- `grist-stop` - Stop Grist server
+- `grist-restart` - Restart Grist server
+- `grist-logs` - View Grist server logs (follow mode)
+
+**System Commands:**
+- `start-all` - Start all services (Grist + Flutter)
+- `stop-all` - Stop all services
+- `clean` - Remove Docker containers and volumes (WARNING: This will delete Grist data!)
 
 ### Using Docker Compose Directly
 
-**Run tests:**
+**Grist:**
 ```bash
+# Start Grist
+docker-compose up -d grist
+
+# Stop Grist
+docker-compose stop grist
+
+# View Grist logs
+docker-compose logs -f grist
+
+# Restart Grist
+docker-compose restart grist
+```
+
+**Flutter:**
+```bash
+# Run tests
 docker-compose run --rm flutter-test
-```
 
-**Run analysis:**
-```bash
+# Run analysis
 docker-compose run --rm flutter-analyze
+
+# Interactive shell
+docker-compose run --rm flutter-shell /bin/bash
 ```
 
-**Interactive shell:**
+**All Services:**
 ```bash
-docker-compose run --rm flutter-shell /bin/bash
+# Start everything
+docker-compose up -d
+
+# Stop everything
+docker-compose stop
+
+# Remove everything (including volumes)
+docker-compose down -v
 ```
 
 ## Manual Testing Inside Container
@@ -131,6 +231,59 @@ No issues found!
 ```
 
 ## Troubleshooting
+
+### Grist Issues
+
+**Problem:** Grist container won't start
+
+**Solution:**
+```bash
+# Check Grist logs
+./docker-test.sh grist-logs
+
+# Ensure .env file exists
+cp .env.example .env
+
+# Restart Grist
+./docker-test.sh grist-restart
+```
+
+**Problem:** Cannot access Grist at http://localhost:8484
+
+**Solution:**
+```bash
+# Check if Grist is running
+docker ps | grep grist
+
+# If not running, start it
+./docker-test.sh grist-start
+
+# Check port is not in use
+lsof -i :8484  # macOS/Linux
+netstat -ano | findstr :8484  # Windows
+```
+
+**Problem:** Grist data lost after `docker-compose down -v`
+
+**Solution:**
+The `-v` flag removes volumes. Never use it unless you want to delete all data!
+Use `./docker-test.sh stop-all` instead to preserve data.
+
+**Backup your Grist data:**
+```bash
+# Create backup
+tar -czf grist-backup-$(date +%Y%m%d).tar.gz grist-data/
+
+# Restore from backup
+tar -xzf grist-backup-YYYYMMDD.tar.gz
+```
+
+**Problem:** "Connection refused" when Flutter app tries to reach Grist
+
+**Solution:**
+Make sure you're using the correct URL:
+- Inside Docker network: `http://grist:8484`
+- From host machine: `http://localhost:8484`
 
 ### Docker Build Issues
 
@@ -196,37 +349,93 @@ docker-compose run --rm flutter-shell flutter test test/services/grist_service_t
 
 ## Development Workflow
 
-### 1. Make Code Changes
+### Complete Setup Workflow
 
-Edit files locally on your host machine.
+**First Time Setup:**
 
-### 2. Run Tests
+1. **Initialize environment:**
+   ```bash
+   cp .env.example .env
+   # Edit .env to set GRIST_SESSION_SECRET
+   ```
 
-```bash
-./docker-test.sh all
+2. **Start Grist:**
+   ```bash
+   ./docker-test.sh grist-start
+   ```
+
+3. **Configure Grist:**
+   - Open http://localhost:8484
+   - Create a new document
+   - Set up your tables (Users, Products, etc.)
+   - Generate an API key (Profile Settings → API)
+
+4. **Build Flutter environment:**
+   ```bash
+   ./docker-test.sh build
+   ```
+
+5. **Run tests:**
+   ```bash
+   ./docker-test.sh all
+   ```
+
+### Daily Development Workflow
+
+1. **Start Grist (if not running):**
+   ```bash
+   ./docker-test.sh grist-start
+   ```
+
+2. **Make code changes** on your host machine
+
+3. **Run tests:**
+   ```bash
+   ./docker-test.sh all
+   ```
+
+4. **Fix issues** if tests fail
+
+5. **Commit changes:**
+   ```bash
+   git add .
+   git commit -m "Your message"
+   git push
+   ```
+
+6. **Stop services when done:**
+   ```bash
+   ./docker-test.sh stop-all
+   ```
+
+### Testing Your Flutter App Against Grist
+
+Your Flutter app YAML configuration should use the Docker network hostname:
+
+```yaml
+grist:
+  base_url: "http://grist:8484"  # Use "grist" not "localhost"
+  document_id: "YOUR_DOCUMENT_ID"
+  api_key: "YOUR_API_KEY"
+  users_table: "Users"
 ```
 
-### 3. Fix Issues
-
-If tests fail, fix the code and re-run tests.
-
-### 4. Commit Changes
-
-```bash
-git add .
-git commit -m "Your message"
-git push
-```
+**Note:** Use `grist:8484` when your Flutter app runs inside Docker, and `localhost:8484` when testing locally outside Docker.
 
 ## Volumes
 
 The Docker setup uses volumes for:
-- **Code:** Mounted from host to `/app` in container
-- **Pub cache:** Persisted to avoid re-downloading packages
+- **Grist Data:** `./grist-data` mounted to `/persist` in Grist container (persists Grist documents)
+- **Flutter Code:** `.` mounted to `/app` in Flutter containers (live code sync)
+- **Pub Cache:** Named volume `flutter-pub-cache` to avoid re-downloading packages
 
 ## Environment Variables
 
-Available environment variables:
+**Grist Variables (set in .env):**
+- `GRIST_SESSION_SECRET` - Session encryption key (required)
+- `GRIST_APP_HOME_URL` - Public URL for Grist (default: http://localhost:8484)
+
+**Flutter Variables (in Dockerfile):**
 - `FLUTTER_ROOT=/opt/flutter` - Flutter SDK location
 - `FLUTTER_VERSION=3.16.0` - Flutter version (configurable in Dockerfile)
 
@@ -276,13 +485,27 @@ If you encounter issues:
 
 ## Summary
 
-**Quick test workflow:**
-```bash
-# First time
-docker-compose build
+**Complete development environment:**
 
-# Every time you make changes
-./docker-test.sh all
+```bash
+# First time setup
+cp .env.example .env
+./docker-test.sh grist-start       # Start Grist at http://localhost:8484
+./docker-test.sh build              # Build Flutter image
+
+# Daily workflow
+./docker-test.sh grist-start        # Start Grist (if not running)
+# Make code changes...
+./docker-test.sh all                # Run tests
+
+# When done
+./docker-test.sh stop-all           # Stop everything
 ```
 
-This will verify your code compiles and passes all tests! 🎉
+**This Docker environment provides:**
+- ✅ Grist server with persistent data storage
+- ✅ Flutter testing without local installation
+- ✅ Isolated, reproducible development environment
+- ✅ Complete integration testing capability
+
+Access Grist at: **http://localhost:8484** 🎉

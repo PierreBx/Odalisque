@@ -70,6 +70,36 @@ case "$1" in
             exit 1
         fi
         ;;
+    grist-start)
+        echo -e "${BLUE}Starting Grist server...${NC}"
+        docker-compose up -d grist
+        echo -e "${GREEN}✓ Grist started at http://localhost:8484${NC}"
+        ;;
+    grist-stop)
+        echo -e "${BLUE}Stopping Grist server...${NC}"
+        docker-compose stop grist
+        echo -e "${GREEN}✓ Grist stopped${NC}"
+        ;;
+    grist-logs)
+        echo -e "${BLUE}Showing Grist logs...${NC}"
+        docker-compose logs -f grist
+        ;;
+    grist-restart)
+        echo -e "${BLUE}Restarting Grist server...${NC}"
+        docker-compose restart grist
+        echo -e "${GREEN}✓ Grist restarted${NC}"
+        ;;
+    start-all)
+        echo -e "${BLUE}Starting all services...${NC}"
+        docker-compose up -d
+        echo -e "${GREEN}✓ All services started${NC}"
+        echo -e "${GREEN}✓ Grist available at http://localhost:8484${NC}"
+        ;;
+    stop-all)
+        echo -e "${BLUE}Stopping all services...${NC}"
+        docker-compose stop
+        echo -e "${GREEN}✓ All services stopped${NC}"
+        ;;
     clean)
         echo -e "${BLUE}Cleaning Docker resources...${NC}"
         docker-compose down -v
@@ -82,20 +112,31 @@ case "$1" in
         echo -e "${GREEN}✓ Build complete${NC}"
         ;;
     *)
-        echo "Usage: ./docker-test.sh {test|analyze|shell|all|clean|build}"
+        echo "Usage: ./docker-test.sh {test|analyze|shell|all|grist-*|start-all|stop-all|clean|build}"
         echo ""
-        echo "Commands:"
-        echo "  test     - Run unit tests"
-        echo "  analyze  - Run code analysis"
-        echo "  shell    - Open interactive bash shell"
-        echo "  all      - Run analyze + test"
-        echo "  build    - Build Docker image"
-        echo "  clean    - Remove Docker containers and volumes"
+        echo "Flutter Commands:"
+        echo "  test         - Run unit tests"
+        echo "  analyze      - Run code analysis"
+        echo "  shell        - Open interactive bash shell"
+        echo "  all          - Run analyze + test"
+        echo "  build        - Build Docker image"
+        echo ""
+        echo "Grist Commands:"
+        echo "  grist-start  - Start Grist server"
+        echo "  grist-stop   - Stop Grist server"
+        echo "  grist-logs   - Show Grist logs"
+        echo "  grist-restart- Restart Grist server"
+        echo ""
+        echo "System Commands:"
+        echo "  start-all    - Start all services (Grist + Flutter)"
+        echo "  stop-all     - Stop all services"
+        echo "  clean        - Remove Docker containers and volumes"
         echo ""
         echo "Examples:"
-        echo "  ./docker-test.sh test      # Run tests"
-        echo "  ./docker-test.sh all       # Run full suite"
-        echo "  ./docker-test.sh shell     # Interactive mode"
+        echo "  ./docker-test.sh grist-start   # Start Grist"
+        echo "  ./docker-test.sh test          # Run tests"
+        echo "  ./docker-test.sh all           # Run full suite"
+        echo "  ./docker-test.sh start-all     # Start everything"
         exit 1
         ;;
 esac

@@ -51,3 +51,8 @@ coverage/
 *.g.dart
 *.freezed.dart
 *.mocks.dart
+
+# Docker & Grist
+grist-data/*
+!grist-data/README.md
+.env
