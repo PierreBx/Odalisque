@@ -1,18 +1,21 @@
 version: '3.8'
 
 services:
-  typst:
+  mkdocs:
     build:
       context: .
       dockerfile: Dockerfile
-    image: fluttergristapi-typst:latest
+    image: fluttergristapi-mkdocs:latest
     container_name: fluttergristapi-docs
     volumes:
       # Mount the entire documentation-module directory
       - .:/docs
-      # Ensure build directory is persisted
-      - ./build:/docs/build
+      # Ensure site directory is persisted
+      - ./site:/docs/site
     working_dir: /docs
+    ports:
+      # Map port 8000 for live preview server
+      - "8000:8000"
     # Keep container running for interactive use
     stdin_open: true
     tty: true

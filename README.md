@@ -102,15 +102,18 @@ Each role has comprehensive documentation including:
 
 ### 🌐 Building HTML Documentation
 
-Generate a browsable website from the documentation using Docker (no Typst installation needed):
+Generate a browsable website from the documentation using Docker (no Python/MkDocs installation needed):
 
 ```bash
 cd documentation-module
-./scripts/generate-html.sh    # Uses Docker Compose V2
-open build/index.html          # View the website
+./scripts/build-docs.sh       # Build static site with MkDocs
+open site/index.html          # View the website
+
+# OR: Live preview with auto-reload
+./scripts/serve-docs.sh       # Opens http://localhost:8000
 ```
 
-**Prerequisites:** Docker with Compose V2 - no local Typst installation required!
+**Prerequisites:** Docker with Compose V2 - no local Python or MkDocs installation required!
 
 ### 📖 Complete Documentation
 
@@ -216,31 +219,31 @@ cd grist-module
    - Start with your role's Quick Start guide
 
 2. **Using the app** (End User):
-   - [End User Quick Start](documentation-module/end-user/quickstart.typ)
+   - [End User Quick Start](documentation-module/end-user/quickstart.md)
    - Learn login, navigation, and data viewing
 
 3. **Designing apps** (App Designer):
-   - [App Designer Quick Start](documentation-module/app-designer/quickstart.typ)
+   - [App Designer Quick Start](documentation-module/app-designer/quickstart.md)
    - Create YAML configurations and design pages
 
 4. **Managing Grist** (Grist Manager):
-   - [Grist Manager Quick Start](documentation-module/grist-manager/quickstart.typ)
+   - [Grist Manager Quick Start](documentation-module/grist-manager/quickstart.md)
    - Set up tables, users, and schemas
 
 5. **Developing the library** (Flutter Developer):
-   - [Flutter Developer Quick Start](documentation-module/flutter-developer/quickstart.typ)
+   - [Flutter Developer Quick Start](documentation-module/flutter-developer/quickstart.md)
    - Set up dev environment and contribute code
 
 6. **Operating infrastructure** (DevOps):
-   - [DevOps Quick Start](documentation-module/devops/quickstart.typ)
+   - [DevOps Quick Start](documentation-module/devops/quickstart.md)
    - Configure Docker, monitoring, and security
 
 7. **Managing CI/CD** (Delivery Specialist):
-   - [Delivery Specialist Quick Start](documentation-module/delivery-specialist/quickstart.typ)
+   - [Delivery Specialist Quick Start](documentation-module/delivery-specialist/quickstart.md)
    - Set up pipelines and deployment
 
 8. **Managing data** (Data Admin):
-   - [Data Admin Quick Start](documentation-module/data-admin/quickstart.typ)
+   - [Data Admin Quick Start](documentation-module/data-admin/quickstart.md)
    - Configure backups and disaster recovery
 
 ## 🤝 Contributing

@@ -1,0 +1,156 @@
+site_name: Flutter Grist Widgets Documentation
+site_description: Complete documentation for the Flutter Grist Widgets library - a YAML-driven Flutter application generator for Grist databases
+site_author: Flutter Grist Widgets Contributors
+
+# Documentation directory
+docs_dir: docs
+
+# Repository
+repo_url: https://github.com/PierreBx/flutterGristAPI
+repo_name: PierreBx/flutterGristAPI
+edit_uri: edit/main/documentation-module/
+
+# Theme configuration
+theme:
+  name: material
+  palette:
+    # Light mode
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+    - content.action.edit
+  icon:
+    repo: fontawesome/brands/github
+
+# Extensions
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - def_list
+  - toc:
+      permalink: true
+
+# Navigation
+nav:
+  - Home: README.md
+  - Quick Start: QUICKSTART.md
+  - Daily Usage: DAILY_USAGE.md
+  - Docker Guide: README_DOCKER.md
+  - YAML Schema: YAML_SCHEMA.md
+  - Implementation Status: IMPLEMENTATION_STATUS.md
+
+  - User Roles:
+    - Overview: documentation.md
+
+    - End User:
+      - Overview: end-user/overview.md
+      - Quick Start: end-user/quickstart.md
+      - Commands: end-user/commands.md
+      - Reference: end-user/reference.md
+      - Troubleshooting: end-user/troubleshooting.md
+
+    - App Designer:
+      - Overview: app-designer/overview.md
+      - Quick Start: app-designer/quickstart.md
+      - Commands: app-designer/commands.md
+      - YAML Schema: app-designer/yaml-schema.md
+      - Design Patterns: app-designer/design-patterns.md
+      - Reference: app-designer/reference.md
+      - Troubleshooting: app-designer/troubleshooting.md
+
+    - Grist Manager:
+      - Overview: grist-manager/overview.md
+      - Quick Start: grist-manager/quickstart.md
+      - Commands: grist-manager/commands.md
+      - Schema Management: grist-manager/schema-management.md
+      - User Management: grist-manager/user-management.md
+      - Data Operations: grist-manager/data-operations.md
+      - Reference: grist-manager/reference.md
+      - Troubleshooting: grist-manager/troubleshooting.md
+
+    - Flutter Developer:
+      - Overview: flutter-developer/overview.md
+      - Quick Start: flutter-developer/quickstart.md
+      - Architecture: flutter-developer/architecture.md
+      - Development Workflow: flutter-developer/development-workflow.md
+      - API Reference: flutter-developer/api-reference.md
+      - Extending: flutter-developer/extending.md
+      - Commands: flutter-developer/commands.md
+      - Reference: flutter-developer/reference.md
+      - Troubleshooting: flutter-developer/troubleshooting.md
+
+    - DevOps:
+      - Overview: devops/overview.md
+      - Quick Start: devops/quickstart.md
+      - Docker Setup: devops/docker-setup.md
+      - Monitoring: devops/monitoring.md
+      - Security: devops/security.md
+      - Commands: devops/commands.md
+      - Reference: devops/reference.md
+      - Troubleshooting: devops/troubleshooting.md
+
+    - Delivery Specialist:
+      - Overview: delivery-specialist/overview.md
+      - Quick Start: delivery-specialist/quickstart.md
+      - CI/CD Pipeline: delivery-specialist/cicd-pipeline.md
+      - Testing: delivery-specialist/testing.md
+      - Deployment: delivery-specialist/deployment.md
+      - Commands: delivery-specialist/commands.md
+      - Reference: delivery-specialist/reference.md
+      - Troubleshooting: delivery-specialist/troubleshooting.md
+
+    - Data Admin:
+      - Overview: data-admin/overview.md
+      - Quick Start: data-admin/quickstart.md
+      - Backup Strategies: data-admin/backup-strategies.md
+      - Data Integrity: data-admin/data-integrity.md
+      - Disaster Recovery: data-admin/disaster-recovery.md
+      - Commands: data-admin/commands.md
+      - Reference: data-admin/reference.md
+      - Troubleshooting: data-admin/troubleshooting.md
+
+  - Common:
+    - Architecture: common/architecture.md
+    - Glossary: common/glossary.md
+    - Grist Fundamentals: common/grist-fundamentals.md
+    - Docker Basics: common/docker-basics.md
+
+# Plugins
+plugins:
+  - search
+  - mkdocstrings
+
+# Extra
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/PierreBx/flutterGristAPI
