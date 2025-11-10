@@ -79,19 +79,42 @@ flutterGristAPI/
 
 ## 📚 Documentation
 
-All documentation is in the **[documentation-module/](documentation-module/)** directory:
+Documentation is organized by **user role** in the **[documentation-module/](documentation-module/)** directory.
 
-### Essential Guides
+### 🎯 Find Your Role
 
-- **[QUICKSTART.md](documentation-module/QUICKSTART.md)** - First-time setup (15-20 minutes)
-- **[DAILY_USAGE.md](documentation-module/DAILY_USAGE.md)** - Daily workflow and commands
-- **[README_DOCKER.md](documentation-module/README_DOCKER.md)** - Detailed Docker reference
+| Role | Description | Documentation |
+|------|-------------|---------------|
+| 👤 **End User** | Using Flutter apps | [View Guide](documentation-module/end-user/) |
+| 📝 **App Designer** | Configuring apps via YAML | [View Guide](documentation-module/app-designer/) |
+| 🗄️ **Grist Manager** | Managing Grist databases | [View Guide](documentation-module/grist-manager/) |
+| 💻 **Flutter Developer** | Extending the library | [View Guide](documentation-module/flutter-developer/) |
+| ⚙️ **DevOps** | Infrastructure & operations | [View Guide](documentation-module/devops/) |
+| 🚀 **Delivery Specialist** | CI/CD pipelines | [View Guide](documentation-module/delivery-specialist/) |
+| 💾 **Data Admin** | Backups & data integrity | [View Guide](documentation-module/data-admin/) |
 
-### Reference Documentation
+Each role has comprehensive documentation including:
+- **Overview** - Role description & responsibilities
+- **Quick Start** - First-time setup guide
+- **Commands** - Common operations reference
+- **Troubleshooting** - Solutions to common issues
+- **Reference** - Complete detailed documentation
 
-- **[YAML_SCHEMA.md](documentation-module/YAML_SCHEMA.md)** - Complete YAML configuration reference
-- **[IMPLEMENTATION_STATUS.md](documentation-module/IMPLEMENTATION_STATUS.md)** - Feature status
-- **[documentation.typ](documentation-module/documentation.typ)** - Comprehensive docs (Typst format)
+### 🌐 Building HTML Documentation
+
+Generate a browsable website from the documentation:
+
+```bash
+cd documentation-module
+./scripts/generate-html.sh
+open build/index.html  # View the website
+```
+
+**Prerequisites:** Install Typst first (`brew install typst` on macOS)
+
+### 📖 Complete Documentation
+
+For full details, see **[documentation-module/README.md](documentation-module/README.md)**
 
 ## ✨ Features
 
@@ -189,21 +212,36 @@ cd grist-module
 ## 📖 Learning Path
 
 1. **New to the project?**
-   - Start with [documentation-module/QUICKSTART.md](documentation-module/QUICKSTART.md)
-   - Follow the step-by-step setup
+   - Find your role in the [Documentation](#-documentation) section above
+   - Start with your role's Quick Start guide
 
-2. **Ready to develop?**
-   - Read [documentation-module/DAILY_USAGE.md](documentation-module/DAILY_USAGE.md)
-   - Reference the cheat sheet
+2. **Using the app** (End User):
+   - [End User Quick Start](documentation-module/end-user/quickstart.typ)
+   - Learn login, navigation, and data viewing
 
-3. **Building an app?**
-   - See examples in [flutter-module/example/](flutter-module/example/)
-   - Reference [documentation-module/YAML_SCHEMA.md](documentation-module/YAML_SCHEMA.md)
+3. **Designing apps** (App Designer):
+   - [App Designer Quick Start](documentation-module/app-designer/quickstart.typ)
+   - Create YAML configurations and design pages
 
-4. **Contributing code?**
-   - Review [flutter-module/README.md](flutter-module/README.md)
-   - Run tests before committing
-   - Follow conventional commit messages
+4. **Managing Grist** (Grist Manager):
+   - [Grist Manager Quick Start](documentation-module/grist-manager/quickstart.typ)
+   - Set up tables, users, and schemas
+
+5. **Developing the library** (Flutter Developer):
+   - [Flutter Developer Quick Start](documentation-module/flutter-developer/quickstart.typ)
+   - Set up dev environment and contribute code
+
+6. **Operating infrastructure** (DevOps):
+   - [DevOps Quick Start](documentation-module/devops/quickstart.typ)
+   - Configure Docker, monitoring, and security
+
+7. **Managing CI/CD** (Delivery Specialist):
+   - [Delivery Specialist Quick Start](documentation-module/delivery-specialist/quickstart.typ)
+   - Set up pipelines and deployment
+
+8. **Managing data** (Data Admin):
+   - [Data Admin Quick Start](documentation-module/data-admin/quickstart.typ)
+   - Configure backups and disaster recovery
 
 ## 🤝 Contributing
 

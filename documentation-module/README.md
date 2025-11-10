@@ -1,192 +1,260 @@
-# flutter_grist_widgets
+# FlutterGristAPI Documentation
 
-A Flutter library for building complete data-driven applications from Grist using YAML configuration.
+Comprehensive, role-based documentation for the FlutterGristAPI project.
 
 ## Overview
 
-`flutter_grist_widgets` is a **declarative app generator** that creates full-featured Flutter applications from a simple YAML configuration file. Connect your Grist database and define your app structure in YAML - the library handles everything else.
+This documentation is organized by **user type**, providing targeted information for each role involved in the FlutterGristAPI ecosystem.
 
-**Key Concept**: Instead of writing code, you write a YAML file that describes your app's structure, pages, navigation, and data connections. The library automatically generates a complete Flutter application with authentication, navigation, data tables, forms, and admin features.
+## Documentation Structure
 
-## Features
+### By Role
 
-### Core Capabilities
-- 📄 **YAML-Driven** - Define your entire app in a declarative YAML file
-- 🔐 **Built-in Authentication** - Multi-user support with role-based access control
-- 🗄️ **Auto-Schema Detection** - Automatically discovers table structures from Grist
-- 📊 **Multiple View Types** - Tabular lists, detail forms, static pages, admin dashboard
-- 🎨 **Themeable** - Customize colors and branding via YAML
-- 🔍 **Search & Filter** - Built-in search and filtering for data tables
-- ✅ **Validation** - Rich field validation (required, email, regex, ranges, etc.)
-- 👁️ **Conditional Visibility** - Show/hide fields based on user roles or data
+Each role has its own dedicated documentation with consistent sections:
 
-### Page Types
-- **Front Pages** - Static content pages with text and images
-- **Data Master** - Tabular view of Grist tables with search, sort, pagination
-- **Data Detail** - Form view for individual records
-- **Admin Dashboard** - Monitor active users, database stats, system info
+#### 📚 **Documentation Roles**
 
-### Smart Features
-- Auto-generated record numbers (independent of Grist ID)
-- Master-detail navigation with back button
-- Permanent left drawer navigation
-- User profile display and logout
-- Loading states and error handling
-- Expression-based visibility rules
+| Role | Description | Documentation |
+|------|-------------|---------------|
+| 👤 **End User** | Uses the generated Flutter applications | [end-user/](end-user/) |
+| 📝 **App Designer** | Configures apps via YAML | [app-designer/](app-designer/) |
+| 🗄️ **Grist Manager** | Manages Grist databases and schemas | [grist-manager/](grist-manager/) |
+| 💻 **Flutter Developer** | Develops and extends the library | [flutter-developer/](flutter-developer/) |
+| ⚙️ **DevOps** | Manages infrastructure and operations | [devops/](devops/) |
+| 🚀 **Delivery Specialist** | Manages CI/CD pipelines and deployment | [delivery-specialist/](delivery-specialist/) |
+| 💾 **Data Admin** | Manages backups and data integrity | [data-admin/](data-admin/) |
 
-## Getting Started
+### Standard Sections
 
-### 📚 Quick Navigation
+Each role's documentation includes:
 
-- **🚀 [QUICKSTART.md](QUICKSTART.md)** - First time setup guide (Docker + Grist)
-- **📅 [DAILY_USAGE.md](DAILY_USAGE.md)** - Daily development workflow
-- **🐳 [README_DOCKER.md](README_DOCKER.md)** - Detailed Docker documentation
+1. **Overview** - Role description, responsibilities, prerequisites
+2. **Quick Start** - First-time setup guide (5-30 minutes)
+3. **Commands/Actions** - Reference of common operations
+4. **Troubleshooting** - Common issues and solutions
+5. **Reference** - Complete detailed documentation
 
-### Installation
+Some roles have additional specialized sections (e.g., YAML Schema for App Designer, Architecture for Flutter Developer).
 
-Add this to your package's `pubspec.yaml` file:
+## Building the Documentation
 
-```yaml
-dependencies:
-  flutter_grist_widgets: ^0.1.0
+### Prerequisites
+
+Install Typst (documentation compiler):
+
+**macOS:**
+```bash
+brew install typst
 ```
 
-### Quick Start
+**Linux:**
+```bash
+# Using cargo (Rust package manager)
+cargo install --git https://github.com/typst/typst
 
-1. **Create a YAML configuration file** (`app_config.yaml`):
-
-```yaml
-app:
-  name: "My Business App"
-  version: "1.0.0"
-
-grist:
-  base_url: "https://docs.getgrist.com"
-  api_key: "your_api_key"
-  document_id: "your_document_id"
-
-auth:
-  users_table: "Users"
-
-pages:
-  - id: "products_master"
-    type: "data_master"
-    title: "Products"
-    menu:
-      label: "Products"
-      icon: "inventory"
-    grist:
-      table: "Products"
-      record_number:
-        enabled: true
-      columns:
-        - name: "name"
-          label: "Product Name"
-          visible: true
-      on_row_click:
-        navigate_to: "products_detail"
-        pass_param: "id"
+# Or download binary from releases
+# https://github.com/typst/typst/releases
 ```
 
-2. **Generate your app**:
-
-```dart
-import 'package:flutter_grist_widgets/flutter_grist_widgets.dart';
-
-void main() {
-  runApp(
-    GristApp.fromYaml('assets/app_config.yaml'),
-  );
-}
+**Verify installation:**
+```bash
+typst --version
 ```
 
-That's it! The library generates a complete app with authentication, navigation, and data views.
+### Build HTML Website
 
-## Documentation
+Generate the complete HTML documentation website:
 
-- **[YAML Schema Reference](YAML_SCHEMA.md)** - Complete documentation of all YAML options
-- **[Example Configuration](example/app_config.yaml)** - Full working example with all features
-- **[Typst Documentation](documentation.typ)** - Printable documentation (compile with `typst compile documentation.typ`)
-
-## YAML Configuration Structure
-
-```yaml
-app:              # Application settings, error handling, loading states
-grist:            # Grist connection details
-auth:             # Authentication and user management
-theme:            # Colors and styling
-navigation:       # Drawer menu configuration
-pages:            # Array of page definitions
-  - type: front              # Static content page
-  - type: data_master        # Tabular data view
-  - type: data_detail        # Form detail view
-  - type: admin_dashboard    # Admin monitoring page
+```bash
+cd documentation-module
+./scripts/generate-html.sh
 ```
 
-See [YAML_SCHEMA.md](YAML_SCHEMA.md) for complete details.
+This creates:
+- `build/index.html` - Landing page with role selector
+- `build/end-user.html` - End User documentation
+- `build/app-designer.html` - App Designer documentation
+- `build/grist-manager.html` - Grist Manager documentation
+- `build/flutter-developer.html` - Flutter Developer documentation
+- `build/devops.html` - DevOps documentation
+- `build/delivery-specialist.html` - Delivery Specialist documentation
+- `build/data-admin.html` - Data Admin documentation
+- `build/styles.css` - Website styling
 
-## Example Features
+**View the website:**
 
-### Conditional Visibility
-```yaml
-fields:
-  - name: "salary"
-    visible_if: "user.role == 'admin' OR user.role == 'hr'"
+```bash
+# macOS
+open build/index.html
+
+# Linux
+xdg-open build/index.html
+
+# Windows
+start build/index.html
 ```
 
-### Field Validation
-```yaml
-fields:
-  - name: "email"
-    validators:
-      - type: "required"
-      - type: "email"
-      - type: "regex"
-        pattern: "^[a-z0-9._%+-]+@company\\.com$"
-        message: "Must be a company email"
+### Build Individual PDFs
+
+Generate PDF for a specific role:
+
+```bash
+cd documentation-module
+
+# End User
+typst compile end-user/end-user.typ build/end-user.pdf
+
+# App Designer
+typst compile app-designer/app-designer.typ build/app-designer.pdf
+
+# Grist Manager
+typst compile grist-manager/grist-manager.typ build/grist-manager.pdf
+
+# Flutter Developer
+typst compile flutter-developer/flutter-developer.typ build/flutter-developer.pdf
+
+# DevOps
+typst compile devops/devops.typ build/devops.pdf
+
+# Delivery Specialist
+typst compile delivery-specialist/delivery-specialist.typ build/delivery-specialist.pdf
+
+# Data Admin
+typst compile data-admin/data-admin.typ build/data-admin.pdf
 ```
 
-### Admin Dashboard
-```yaml
-- id: "admin"
-  type: "admin_dashboard"
-  visible_if: "user.role == 'admin'"
-  widgets:
-    - type: "active_users"
-    - type: "database_summary"
-      grist_tables: ["Products", "Customers"]
+### Build All PDFs
+
+```bash
+cd documentation-module
+
+for role in end-user app-designer grist-manager flutter-developer devops delivery-specialist data-admin; do
+    typst compile $role/$role.typ build/$role.pdf
+    echo "✅ Built $role.pdf"
+done
 ```
 
-## Requirements
+## Documentation Format
 
-### Grist Setup
-Your Grist document must include a **Users table** with these columns:
-- `email` (Text) - User login email
-- `password_hash` (Text) - Hashed password
-- `role` (Text) - User role (admin, manager, user, etc.)
-- `active` (Toggle) - Whether user can log in
+All documentation is written in **Typst** format (`.typ` files), which provides:
 
-## Roadmap
+- Professional typesetting
+- Consistent formatting
+- Table of contents generation
+- Cross-referencing
+- Code syntax highlighting
+- PDF and HTML output
 
-**Current Version (v0.1.0)**: Read-only data views
+### Why Typst?
 
-**Planned Features**:
-- Editable forms (create, update, delete records)
-- Custom action buttons
-- Pull-to-refresh
-- Offline support
-- Export functionality (PDF, CSV)
-- Custom validators as functions
-- Audit logging
+- **Modern**: Next-generation markup language for documents
+- **Fast**: Compiles quickly, even for large documents
+- **Readable**: Clean syntax, easy to edit
+- **Version Control Friendly**: Text-based format works great with Git
+- **Multi-format**: Generate HTML, PDF, PNG from same source
 
-## Project Status
+## Quick Start by Role
 
-This library is currently in active development (v0.1.0). The YAML schema is being finalized and implementation is in progress.
+### I'm an End User
+**Start here:** [end-user/quickstart.typ](end-user/quickstart.typ)
+- Learn how to log in and navigate the app
+- View and search data
+- Understand your role and permissions
 
-## Contributing
+### I'm an App Designer
+**Start here:** [app-designer/quickstart.typ](app-designer/quickstart.typ)
+- Create your first YAML configuration
+- Design pages and navigation
+- Map Grist tables to app views
 
-Contributions are welcome! Please feel free to submit issues or pull requests.
+### I'm a Grist Manager
+**Start here:** [grist-manager/quickstart.typ](grist-manager/quickstart.typ)
+- Set up your first Grist document
+- Create the Users table
+- Generate API keys
+
+### I'm a Flutter Developer
+**Start here:** [flutter-developer/quickstart.typ](flutter-developer/quickstart.typ)
+- Set up development environment
+- Run tests
+- Make your first contribution
+
+### I'm DevOps
+**Start here:** [devops/quickstart.typ](devops/quickstart.typ)
+- Set up Docker environment
+- Configure services
+- Monitor infrastructure
+
+### I'm a Delivery Specialist
+**Start here:** [delivery-specialist/quickstart.typ](delivery-specialist/quickstart.typ)
+- Set up Concourse CI/CD
+- Deploy pipelines
+- Automate releases
+
+### I'm a Data Admin
+**Start here:** [data-admin/quickstart.typ](data-admin/quickstart.typ)
+- Set up backup system
+- Configure disaster recovery
+- Monitor data integrity
+
+## Contributing to Documentation
+
+### Editing Documentation
+
+1. Edit `.typ` files in the appropriate role directory
+2. Use Typst syntax for formatting
+3. Import common modules when needed:
+   ```typst
+   #import "../common/styles.typ": *
+   #import "../common/glossary.typ": glossary
+   ```
+
+4. Rebuild to see changes:
+   ```bash
+   ./scripts/generate-html.sh
+   ```
+
+### Adding New Sections
+
+1. Create new `.typ` file in role directory
+2. Include it in the master file (e.g., `app-designer/app-designer.typ`):
+   ```typst
+   #include "new-section.typ"
+   ```
+
+3. Rebuild documentation
+
+### Documentation Standards
+
+- **Clear headings**: Use hierarchical structure (=, ==, ===)
+- **Code blocks**: Use ` ```language ` for code examples
+- **Tables**: Use Typst table syntax for structured data
+- **Info boxes**: Use `info_box()` for tips, warnings, errors
+- **Commands**: Use `command_table()` for command references
+- **Troubleshooting**: Use `troubleshooting_table()` for issues
+
+## Resources
+
+- **Typst Documentation**: https://typst.app/docs
+- **Typst Tutorial**: https://typst.app/docs/tutorial/
+- **Typst GitHub**: https://github.com/typst/typst
+- **Material Icons** (for menu icons): https://fonts.google.com/icons
+- **Grist API**: https://support.getgrist.com/api/
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This documentation is part of the FlutterGristAPI project and is licensed under the MIT License.
+
+## Support
+
+If you need help with the documentation:
+
+1. Check the appropriate role's troubleshooting section
+2. Review the reference documentation
+3. Open an issue on GitHub
+4. Contact the project maintainers
+
+---
+
+**Documentation Version**: 0.1.0
+**Last Updated**: 2025-01-10
