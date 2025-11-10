@@ -1,0 +1,23 @@
+# Docker build context exclusions for Typst documentation builder
+
+# Build output
+build/
+*.html
+*.pdf
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.tmp
+*.log

@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  typst:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fluttergristapi-typst:latest
+    container_name: fluttergristapi-docs
+    volumes:
+      # Mount the entire documentation-module directory
+      - .:/docs
+      # Ensure build directory is persisted
+      - ./build:/docs/build
+    working_dir: /docs
+    # Keep container running for interactive use
+    stdin_open: true
+    tty: true

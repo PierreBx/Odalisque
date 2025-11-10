@@ -2,7 +2,7 @@
 
 # Generate index.html for FlutterGristAPI documentation
 
-BUILD_DIR="../build"
+BUILD_DIR="build"
 INDEX_FILE="$BUILD_DIR/index.html"
 
 # Change to documentation module directory

@@ -2,24 +2,30 @@
 set -e
 
 # FlutterGristAPI Documentation HTML Generator
-# Converts Typst documentation to HTML for all roles
+# Converts Typst documentation to HTML for all roles using Docker
 
 echo "🔨 Building FlutterGristAPI Documentation Website..."
 echo ""
 
-# Check if Typst is installed
-if ! command -v typst &> /dev/null; then
-    echo "❌ Error: Typst is not installed"
+# Change to documentation module directory
+cd "$(dirname "$0")/.."
+
+# Check if Docker is available
+if ! command -v docker &> /dev/null; then
+    echo "❌ Error: Docker is not installed"
     echo ""
-    echo "Please install Typst first:"
-    echo "  - macOS: brew install typst"
-    echo "  - Linux: cargo install --git https://github.com/typst/typst"
-    echo "  - Or download from: https://github.com/typst/typst/releases"
+    echo "Please install Docker first:"
+    echo "  - https://docs.docker.com/get-docker/"
     echo ""
     exit 1
 fi
 
-echo "✅ Typst found: $(typst --version)"
+echo "✅ Docker found: $(docker --version)"
+echo ""
+
+# Build Typst Docker image if it doesn't exist
+echo "🐳 Building Typst Docker image..."
+docker-compose build typst
 echo ""
 
 # Define roles
@@ -44,11 +50,8 @@ ROLE_NAMES[delivery-specialist]="Delivery Specialist"
 ROLE_NAMES[data-admin]="Data Admin"
 
 # Create build directory
-BUILD_DIR="../build"
+BUILD_DIR="build"
 mkdir -p "$BUILD_DIR"
-
-# Change to documentation module directory
-cd "$(dirname "$0")/.."
 
 echo "📁 Working directory: $(pwd)"
 echo "📁 Build directory: $BUILD_DIR"
@@ -70,12 +73,18 @@ for role in "${ROLES[@]}"; do
         continue
     fi
 
-    # Compile Typst to HTML
-    if typst compile "$TYPST_FILE" "$HTML_FILE" 2>&1 | grep -v "warning:"; then
+    # Compile Typst to HTML using Docker
+    if docker-compose run --rm typst typst compile "$TYPST_FILE" "$HTML_FILE" 2>&1 | grep -v "warning:" | grep -v "Creating"; then
         echo "   ✅ $ROLE_NAME → $role.html"
         ((SUCCESS_COUNT++))
     else
-        echo "   ❌ Failed to build $ROLE_NAME"
+        # Check if file was created despite warning messages
+        if [ -f "$HTML_FILE" ]; then
+            echo "   ✅ $ROLE_NAME → $role.html"
+            ((SUCCESS_COUNT++))
+        else
+            echo "   ❌ Failed to build $ROLE_NAME"
+        fi
     fi
 done
 
