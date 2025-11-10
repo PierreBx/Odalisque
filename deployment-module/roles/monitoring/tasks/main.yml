@@ -1,0 +1,90 @@
+---
+# Monitoring role - Basic monitoring setup
+
+- name: Install monitoring tools
+  apt:
+    name:
+      - htop
+      - iotop
+      - sysstat
+      - nload
+      - ncdu
+    state: present
+  tags: ['packages']
+
+- name: Enable sysstat data collection
+  lineinfile:
+    path: /etc/default/sysstat
+    regexp: '^ENABLED='
+    line: 'ENABLED="true"'
+    state: present
+  tags: ['config']
+
+- name: Start sysstat service
+  systemd:
+    name: sysstat
+    enabled: yes
+    state: started
+  tags: ['services']
+
+- name: Create monitoring scripts directory
+  file:
+    path: /opt/monitoring
+    state: directory
+    mode: '0755'
+  tags: ['scripts']
+
+- name: Create system health check script
+  copy:
+    dest: /opt/monitoring/health_check.sh
+    mode: '0755'
+    content: |
+      #!/bin/bash
+      # System health check script
+
+      echo "=== System Health Report ==="
+      echo "Date: $(date)"
+      echo ""
+
+      echo "=== CPU Usage ==="
+      top -bn1 | grep "Cpu(s)" | sed "s/.*, *\([0-9.]*\)%* id.*/\1/" | awk '{print "CPU Usage: " 100 - $1"%"}'
+      echo ""
+
+      echo "=== Memory Usage ==="
+      free -h
+      echo ""
+
+      echo "=== Disk Usage ==="
+      df -h /
+      echo ""
+
+      echo "=== System Load ==="
+      uptime
+      echo ""
+
+      echo "=== Docker Status ==="
+      if command -v docker &> /dev/null; then
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
+      else
+          echo "Docker not installed"
+      fi
+      echo ""
+
+      echo "=== Network Connections ==="
+      ss -tuln | grep LISTEN | head -n 10
+  tags: ['scripts']
+
+- name: Create log rotation configuration for application
+  copy:
+    dest: /etc/logrotate.d/{{ app_name | default('app') }}
+    content: |
+      {{ app_home | default('/opt/app') }}/logs/*.log {
+          daily
+          rotate 7
+          compress
+          delaycompress
+          notifempty
+          missingok
+          create 0640 {{ app_user | default('appuser') }} {{ app_group | default('appuser') }}
+      }
+  tags: ['logrotate']

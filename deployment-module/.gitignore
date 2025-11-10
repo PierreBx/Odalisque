@@ -1,0 +1,35 @@
+# Ansible
+*.retry
+ansible.log
+.vault_pass
+*.vault
+
+# Inventory - ignore the actual hosts.yml but keep the example
+inventory/hosts.yml
+
+# Temporary files
+/tmp/
+*.tmp
+*.cache
+
+# Reports
+reports/*.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,7 @@
+---
+# Handlers for app_environment role
+
+- name: reload nginx
+  systemd:
+    name: nginx
+    state: reloaded

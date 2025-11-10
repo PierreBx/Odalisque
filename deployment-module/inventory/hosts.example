@@ -1,0 +1,14 @@
+# Example inventory file - Copy to hosts.yml and customize
+# You can also set these values via environment variables:
+#   export RASPI_HOST=192.168.1.100
+#   export RASPI_USER=pi
+
+all:
+  children:
+    production:
+      hosts:
+        raspberry_pi:
+          ansible_host: 192.168.1.100  # Replace with your Raspberry Pi IP
+          ansible_user: pi               # Replace with your SSH user
+          ansible_port: 22
+          ansible_python_interpreter: /usr/bin/python3

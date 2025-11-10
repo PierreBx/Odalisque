@@ -1,0 +1,7 @@
+---
+# Default variables for app_environment role
+app_name: "flutter_grist_app"
+app_user: "appuser"
+app_group: "appuser"
+app_home: "/opt/flutter_grist_app"
+deployment_env: "production"

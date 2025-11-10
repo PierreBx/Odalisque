@@ -1,0 +1,74 @@
+---
+# Main playbook for configuring Raspberry Pi production server
+# This playbook ensures the server is fully configured and ready for deployment
+#
+# Usage:
+#   ansible-playbook playbooks/configure_server.yml
+#   ansible-playbook playbooks/configure_server.yml --check  # Dry run
+#   ansible-playbook playbooks/configure_server.yml -vv      # Verbose mode
+
+- name: Configure Raspberry Pi Production Server
+  hosts: production
+  become: yes
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Display configuration info
+      debug:
+        msg: |
+          Configuring server: {{ inventory_hostname }}
+          Host: {{ ansible_host }}
+          User: {{ ansible_user }}
+          Environment: {{ deployment_env }}
+
+    - name: Wait for system to be ready
+      wait_for_connection:
+        timeout: 60
+        delay: 5
+
+    - name: Gather facts
+      setup:
+
+  roles:
+    - role: common
+      tags: ['common', 'base']
+
+    - role: security
+      tags: ['security']
+
+    - role: docker
+      tags: ['docker', 'containers']
+
+    - role: monitoring
+      tags: ['monitoring']
+
+    - role: app_environment
+      tags: ['app', 'environment']
+
+  post_tasks:
+    - name: Display completion message
+      debug:
+        msg: |
+          Server configuration completed successfully!
+          Server: {{ inventory_hostname }}
+          OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          Kernel: {{ ansible_kernel }}
+          Python: {{ ansible_python_version }}
+
+    - name: Save configuration report
+      local_action:
+        module: copy
+        content: |
+          Server Configuration Report
+          ==========================
+          Date: {{ ansible_date_time.iso8601 }}
+          Server: {{ inventory_hostname }}
+          IP: {{ ansible_host }}
+          OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          Kernel: {{ ansible_kernel }}
+          Architecture: {{ ansible_architecture }}
+          Python: {{ ansible_python_version }}
+          Memory: {{ ansible_memtotal_mb }} MB
+          CPU Cores: {{ ansible_processor_vcpus }}
+        dest: "./reports/config_report_{{ inventory_hostname }}_{{ ansible_date_time.date }}.txt"
+      tags: ['report']

@@ -1,0 +1,5 @@
+# Ansible requirements
+ansible>=2.9.0,<3.0.0
+
+# Optional but recommended
+ansible-lint>=6.0.0

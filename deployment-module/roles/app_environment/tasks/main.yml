@@ -1,0 +1,129 @@
+---
+# App Environment role - Application-specific setup
+
+- name: Create application user
+  user:
+    name: "{{ app_user }}"
+    shell: /bin/bash
+    home: "{{ app_home }}"
+    createhome: yes
+    groups: docker
+    append: yes
+  tags: ['users']
+
+- name: Create application directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0755'
+  loop:
+    - "{{ app_home }}"
+    - "{{ app_home }}/logs"
+    - "{{ app_home }}/data"
+    - "{{ app_home }}/config"
+    - "{{ app_home }}/backups"
+  tags: ['directories']
+
+- name: Install application runtime dependencies
+  apt:
+    name:
+      - nginx
+      - certbot
+      - python3-certbot-nginx
+    state: present
+  tags: ['packages']
+
+- name: Create nginx configuration directory
+  file:
+    path: /etc/nginx/sites-available
+    state: directory
+    mode: '0755'
+  tags: ['nginx']
+
+- name: Create default nginx configuration for app
+  copy:
+    dest: /etc/nginx/sites-available/{{ app_name }}
+    content: |
+      server {
+          listen 80;
+          server_name _;
+
+          location / {
+              proxy_pass http://localhost:8080;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+          }
+
+          location /health {
+              access_log off;
+              return 200 "healthy\n";
+              add_header Content-Type text/plain;
+          }
+      }
+  notify: reload nginx
+  tags: ['nginx', 'config']
+
+- name: Enable nginx site
+  file:
+    src: /etc/nginx/sites-available/{{ app_name }}
+    dest: /etc/nginx/sites-enabled/{{ app_name }}
+    state: link
+  notify: reload nginx
+  tags: ['nginx']
+
+- name: Remove default nginx site
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: reload nginx
+  tags: ['nginx']
+
+- name: Start and enable nginx
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+  tags: ['nginx', 'services']
+
+- name: Create environment file template
+  copy:
+    dest: "{{ app_home }}/config/.env.example"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0600'
+    content: |
+      # Application Environment Configuration
+      # Copy this file to .env and customize
+
+      # Application settings
+      APP_NAME={{ app_name }}
+      APP_ENV={{ deployment_env }}
+      APP_PORT=8080
+
+      # Grist API configuration
+      GRIST_BASE_URL=https://docs.getgrist.com
+      GRIST_API_KEY=your_api_key_here
+      GRIST_DOCUMENT_ID=your_document_id_here
+
+      # Security
+      SECRET_KEY=change_this_to_a_random_string
+
+      # Logging
+      LOG_LEVEL=INFO
+  tags: ['config']
+
+- name: Display setup completion message
+  debug:
+    msg: |
+      Application environment setup completed!
+      App user: {{ app_user }}
+      App home: {{ app_home }}
+      Remember to:
+      1. Copy {{ app_home }}/config/.env.example to .env
+      2. Update .env with your actual configuration values
+      3. Deploy your application to {{ app_home }}
+  tags: ['info']
