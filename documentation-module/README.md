@@ -45,7 +45,7 @@ Some roles have additional specialized sections (e.g., YAML Schema for App Desig
 **Verify Docker is installed:**
 ```bash
 docker --version
-docker-compose --version
+docker compose version
 ```
 
 If you don't have Docker, install it from: https://docs.docker.com/get-docker/
