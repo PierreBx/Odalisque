@@ -102,15 +102,15 @@ Each role has comprehensive documentation including:
 
 ### 🌐 Building HTML Documentation
 
-Generate a browsable website from the documentation:
+Generate a browsable website from the documentation using Docker (no Typst installation needed):
 
 ```bash
 cd documentation-module
-./scripts/generate-html.sh
-open build/index.html  # View the website
+./scripts/generate-html.sh    # Uses Docker to build
+open build/index.html          # View the website
 ```
 
-**Prerequisites:** Install Typst first (`brew install typst` on macOS)
+**Prerequisites:** Docker only - no local Typst installation required!
 
 ### 📖 Complete Documentation
 

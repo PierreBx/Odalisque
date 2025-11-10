@@ -40,26 +40,15 @@ Some roles have additional specialized sections (e.g., YAML Schema for App Desig
 
 ### Prerequisites
 
-Install Typst (documentation compiler):
+**Docker** is required to build the documentation. No local Typst installation needed!
 
-**macOS:**
+**Verify Docker is installed:**
 ```bash
-brew install typst
+docker --version
+docker-compose --version
 ```
 
-**Linux:**
-```bash
-# Using cargo (Rust package manager)
-cargo install --git https://github.com/typst/typst
-
-# Or download binary from releases
-# https://github.com/typst/typst/releases
-```
-
-**Verify installation:**
-```bash
-typst --version
-```
+If you don't have Docker, install it from: https://docs.docker.com/get-docker/
 
 ### Build HTML Website
 
@@ -70,7 +59,14 @@ cd documentation-module
 ./scripts/generate-html.sh
 ```
 
-This creates:
+**What happens:**
+1. Docker pulls the official Typst image (first time only)
+2. Builds a custom image with required tools
+3. Compiles all 7 role documentation files to HTML
+4. Generates the landing page with role selector
+5. Creates professional CSS styling
+
+**Output:**
 - `build/index.html` - Landing page with role selector
 - `build/end-user.html` - End User documentation
 - `build/app-designer.html` - App Designer documentation
@@ -96,42 +92,59 @@ start build/index.html
 
 ### Build Individual PDFs
 
-Generate PDF for a specific role:
+Generate PDF for a specific role using Docker:
 
 ```bash
 cd documentation-module
 
 # End User
-typst compile end-user/end-user.typ build/end-user.pdf
+./typst.sh compile end-user/end-user.typ build/end-user.pdf
 
 # App Designer
-typst compile app-designer/app-designer.typ build/app-designer.pdf
+./typst.sh compile app-designer/app-designer.typ build/app-designer.pdf
 
 # Grist Manager
-typst compile grist-manager/grist-manager.typ build/grist-manager.pdf
+./typst.sh compile grist-manager/grist-manager.typ build/grist-manager.pdf
 
 # Flutter Developer
-typst compile flutter-developer/flutter-developer.typ build/flutter-developer.pdf
+./typst.sh compile flutter-developer/flutter-developer.typ build/flutter-developer.pdf
 
 # DevOps
-typst compile devops/devops.typ build/devops.pdf
+./typst.sh compile devops/devops.typ build/devops.pdf
 
 # Delivery Specialist
-typst compile delivery-specialist/delivery-specialist.typ build/delivery-specialist.pdf
+./typst.sh compile delivery-specialist/delivery-specialist.typ build/delivery-specialist.pdf
 
 # Data Admin
-typst compile data-admin/data-admin.typ build/data-admin.pdf
+./typst.sh compile data-admin/data-admin.typ build/data-admin.pdf
 ```
 
-### Build All PDFs
+**Tip:** The `typst.sh` helper script automatically runs Typst commands inside a Docker container.
+
+### Build All PDFs at Once
 
 ```bash
 cd documentation-module
 
 for role in end-user app-designer grist-manager flutter-developer devops delivery-specialist data-admin; do
-    typst compile $role/$role.typ build/$role.pdf
+    ./typst.sh compile $role/$role.typ build/$role.pdf
     echo "✅ Built $role.pdf"
 done
+```
+
+### Using Typst Commands Directly
+
+You can run any Typst command using the helper script:
+
+```bash
+# Get Typst version
+./typst.sh --version
+
+# Get help
+./typst.sh --help
+
+# Watch mode (auto-rebuild on changes)
+./typst.sh watch end-user/end-user.typ build/end-user.pdf
 ```
 
 ## Documentation Format
