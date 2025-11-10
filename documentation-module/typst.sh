@@ -16,9 +16,9 @@ fi
 # Build image if needed
 if ! docker images | grep -q "fluttergristapi-typst"; then
     echo "🐳 Building Typst Docker image..."
-    docker-compose build typst
+    docker compose build typst
     echo ""
 fi
 
 # Run Typst command in Docker
-docker-compose run --rm typst typst "$@"
+docker compose run --rm typst typst "$@"

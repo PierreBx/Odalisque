@@ -106,11 +106,11 @@ Generate a browsable website from the documentation using Docker (no Typst insta
 
 ```bash
 cd documentation-module
-./scripts/generate-html.sh    # Uses Docker to build
+./scripts/generate-html.sh    # Uses Docker Compose V2
 open build/index.html          # View the website
 ```
 
-**Prerequisites:** Docker only - no local Typst installation required!
+**Prerequisites:** Docker with Compose V2 - no local Typst installation required!
 
 ### 📖 Complete Documentation
 

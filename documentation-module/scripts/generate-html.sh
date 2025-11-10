@@ -25,7 +25,7 @@ echo ""
 
 # Build Typst Docker image if it doesn't exist
 echo "🐳 Building Typst Docker image..."
-docker-compose build typst
+docker compose build typst
 echo ""
 
 # Define roles
@@ -74,7 +74,7 @@ for role in "${ROLES[@]}"; do
     fi
 
     # Compile Typst to HTML using Docker
-    if docker-compose run --rm typst typst compile "$TYPST_FILE" "$HTML_FILE" 2>&1 | grep -v "warning:" | grep -v "Creating"; then
+    if docker compose run --rm typst typst compile "$TYPST_FILE" "$HTML_FILE" 2>&1 | grep -v "warning:" | grep -v "Creating"; then
         echo "   ✅ $ROLE_NAME → $role.html"
         ((SUCCESS_COUNT++))
     else
