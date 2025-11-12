@@ -1,6 +1,6 @@
 # Quick Start Guide - First Time Setup
 
-This guide will help you set up the complete Flutter Grist Widgets development environment for the first time.
+This guide will help you set up the complete Odalisque development environment for the first time.
 
 ## Prerequisites
 
@@ -14,8 +14,8 @@ This guide will help you set up the complete Flutter Grist Widgets development e
 ### Step 1: Clone the Repository
 
 ```bash
-git clone https://github.com/yourusername/flutterGristAPI.git
-cd flutterGristAPI
+git clone https://github.com/PierreBx/Odalisque.git
+cd Odalisque
 ```
 
 ### Step 2: Set Up Environment Variables
@@ -105,9 +105,9 @@ You should see:
 
 ### Step 5: Create App Configuration (Optional - for testing with real app)
 
-If you want to test the Flutter widgets with your Grist instance, create a YAML configuration file:
+If you want to test the Odalisque widgets with your Grist instance, you can use or modify the provided example configuration:
 
-**Example: `example/config.yaml`**
+**Example: `flutter-module/example/app_config.yaml`**
 ```yaml
 grist:
   base_url: "http://localhost:8484"
@@ -190,7 +190,7 @@ You should see:
 ```
 
 **Expected test results:**
-- 77 unit tests should pass
+- 450+ unit tests should pass
 - 0 analysis errors
 
 ### Step 8: Verify Setup
@@ -214,7 +214,7 @@ You now have:
 - ✅ Flutter development environment ready
 - ✅ Test user configured (test@example.com / password123)
 - ✅ API key generated
-- ✅ All tests passing
+- ✅ All 450+ tests passing
 
 ## What's Next?
 
@@ -223,35 +223,44 @@ See **DAILY_USAGE.md** for your daily development workflow.
 ## Project Structure Overview
 
 ```
-flutterGristAPI/
-├── lib/                    # Flutter library source code
-│   ├── src/
-│   │   ├── config/        # Configuration models
-│   │   ├── models/        # Data models
-│   │   ├── pages/         # Page widgets
-│   │   ├── providers/     # State management
-│   │   ├── services/      # Grist API service
-│   │   ├── utils/         # Validators, helpers
-│   │   └── widgets/       # Reusable widgets
-│   └── flutter_grist_widgets.dart
-├── test/                  # Unit tests (77 tests)
-├── example/              # Example app configurations
-├── grist-data/           # Grist persistent data (DO NOT DELETE)
-├── docker-compose.yml    # Docker services configuration
-├── docker-test.sh        # Helper script for Docker commands
-├── .env                  # Environment variables (gitignored)
-└── README_DOCKER.md      # Detailed Docker documentation
+Odalisque/
+├── docker-compose.yml           # Docker services configuration
+├── docker-test.sh               # Helper script for Docker commands
+├── .env                         # Environment variables (gitignored)
+├── grist-module/                # Grist data storage
+│   └── grist-data/              # Grist persistent data (DO NOT DELETE)
+├── flutter-module/              # Flutter library source code
+│   ├── lib/                     # Library source code
+│   │   ├── src/
+│   │   │   ├── config/          # Configuration models
+│   │   │   ├── models/          # Data models
+│   │   │   ├── pages/           # Page widgets
+│   │   │   ├── providers/       # State management
+│   │   │   ├── services/        # Grist API service
+│   │   │   ├── utils/           # Validators, helpers
+│   │   │   └── widgets/         # Reusable widgets
+│   │   └── odalisque.dart
+│   ├── test/                    # Unit tests
+│   ├── example/                 # Example app configurations
+│   ├── Dockerfile               # Flutter dev environment
+│   └── pubspec.yaml             # Dependencies
+└── documentation-module/        # Complete documentation
+    └── docs/
+        ├── QUICKSTART.md
+        ├── DAILY_USAGE.md
+        └── README_DOCKER.md
 ```
 
 ## Important Files and Locations
 
 | Item | Location | Description |
 |------|----------|-------------|
-| **Grist Data** | `./grist-data/` | All Grist documents and data (backed up automatically) |
+| **Grist Data** | `./grist-module/grist-data/` | All Grist documents and data (backed up automatically) |
 | **Grist Web UI** | http://localhost:8484 | Access Grist interface in browser |
 | **Environment** | `.env` | Secret keys and configuration (never commit!) |
-| **Tests** | `./test/` | 77 unit tests for validators, services, etc. |
-| **API Service** | `lib/src/services/grist_service.dart` | Main Grist API integration |
+| **Tests** | `./flutter-module/test/` | Comprehensive unit tests for validators, services, etc. |
+| **API Service** | `flutter-module/lib/src/services/grist_service.dart` | Main Grist API integration |
+| **Documentation** | `./documentation-module/docs/` | All documentation files |
 
 ## Troubleshooting
 
@@ -302,6 +311,7 @@ docker-compose run --rm flutter-test --verbose
 
 ## Need Help?
 
-- 📖 See **README_DOCKER.md** for detailed Docker documentation
-- 📖 See **DAILY_USAGE.md** for daily workflow guide
-- 🐛 Report issues at: https://github.com/yourusername/flutterGristAPI/issues
+- 📖 See **documentation-module/docs/README_DOCKER.md** for detailed Docker documentation
+- 📖 See **documentation-module/docs/DAILY_USAGE.md** for daily workflow guide
+- 📖 See **README.md** in the root directory for complete project overview
+- 🐛 Report issues at: https://github.com/PierreBx/Odalisque/issues
