@@ -71,6 +71,23 @@ services:
     networks:
       - grist-network
 
+  # Flutter test with coverage
+  flutter-test-coverage:
+    build:
+      context: ./flutter-module
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${USER_ID:-1000}
+        GROUP_ID: ${GROUP_ID:-1000}
+    container_name: flutter_test_coverage
+    volumes:
+      - ./flutter-module:/app
+      - flutter_pub_cache:/home/flutterdev/.pub-cache
+    working_dir: /app
+    command: sh -c "flutter test --coverage && genhtml coverage/lcov.info -o coverage/html"
+    networks:
+      - grist-network
+
 volumes:
   flutter_pub_cache:
 

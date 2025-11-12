@@ -49,6 +49,13 @@ case "$1" in
     analyze)
         run_command flutter-analyze "Code Analysis"
         ;;
+    coverage)
+        run_command flutter-test-coverage "Unit Tests with Coverage"
+        if [ $? -eq 0 ]; then
+            echo ""
+            echo -e "${GREEN}✓ Coverage report generated at flutter-module/coverage/html/index.html${NC}"
+        fi
+        ;;
     shell)
         echo -e "${BLUE}Opening interactive shell...${NC}"
         docker compose run --rm flutter /bin/bash
@@ -114,11 +121,12 @@ case "$1" in
         echo -e "${GREEN}✓ Build complete${NC}"
         ;;
     *)
-        echo "Usage: ./docker-test.sh {test|analyze|shell|all|grist-*|start-all|stop-all|clean|build}"
+        echo "Usage: ./docker-test.sh {test|analyze|coverage|shell|all|grist-*|start-all|stop-all|clean|build}"
         echo ""
         echo "Flutter Commands:"
         echo "  test         - Run unit tests"
         echo "  analyze      - Run code analysis"
+        echo "  coverage     - Run tests with coverage report"
         echo "  shell        - Open interactive bash shell"
         echo "  all          - Run analyze + test"
         echo "  build        - Build Docker image"
