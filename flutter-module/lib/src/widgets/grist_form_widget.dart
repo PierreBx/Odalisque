@@ -3,8 +3,10 @@ import 'package:provider/provider.dart';
 import '../models/grist_config.dart';
 import '../services/grist_service.dart';
 import '../utils/validators.dart';
+import '../utils/field_type_builder.dart';
 import 'skeleton_loader.dart';
 import '../utils/notifications.dart';
+import 'file_upload_widget.dart';
 
 /// A widget that displays Grist data in a form format.
 ///
@@ -33,6 +35,9 @@ class GristFormWidget extends StatefulWidget {
   /// Custom validators for fields (fieldName -> FieldValidators)
   final Map<String, FieldValidators>? validators;
 
+  /// Optional field configurations (fieldName -> config map with type, choices, etc.)
+  final Map<String, Map<String, dynamic>>? fieldConfigs;
+
   const GristFormWidget({
     super.key,
     required this.config,
@@ -42,6 +47,7 @@ class GristFormWidget extends StatefulWidget {
     this.showEditButton = true,
     this.showDeleteButton = false,
     this.validators,
+    this.fieldConfigs,
   });
 
   @override
@@ -56,6 +62,7 @@ class _GristFormWidgetState extends State<GristFormWidget> {
   bool _isSaving = false;
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> _controllers = {};
+  final Map<String, dynamic> _fieldValues = {}; // For non-text fields
 
   @override
   void initState() {
@@ -116,12 +123,34 @@ class _GristFormWidgetState extends State<GristFormWidget> {
 
     final fields = _record!['fields'] as Map<String, dynamic>? ?? {};
 
-    // Initialize controllers for writable fields
+    // Initialize controllers for writable text-based fields
     for (var fieldName in widget.config.writableAttributes) {
-      _controllers[fieldName] = TextEditingController(
-        text: fields[fieldName]?.toString() ?? '',
-      );
+      final fieldConfig = widget.fieldConfigs?[fieldName];
+      final type = fieldConfig?['type'] as String?;
+      final fieldValue = fields[fieldName];
+
+      if (_isTextBasedField(type)) {
+        _controllers[fieldName] = TextEditingController(
+          text: fieldValue?.toString() ?? '',
+        );
+      } else {
+        // Store value for non-text fields
+        _fieldValues[fieldName] = fieldValue;
+      }
     }
+  }
+
+  bool _isTextBasedField(String? type) {
+    return type == null ||
+        type == 'text' ||
+        type == 'multiline' ||
+        type == 'textarea' ||
+        type == 'email' ||
+        type == 'url' ||
+        type == 'phone' ||
+        type == 'integer' ||
+        type == 'numeric' ||
+        type == 'number';
   }
 
   Future<void> _saveChanges() async {
@@ -134,10 +163,17 @@ class _GristFormWidgetState extends State<GristFormWidget> {
     });
 
     try {
-      // Collect updated fields
+      // Collect updated fields from both controllers and field values
       final updatedFields = <String, dynamic>{};
+
+      // Text-based fields
       for (var entry in _controllers.entries) {
         updatedFields[entry.key] = entry.value.text;
+      }
+
+      // Non-text fields (dates, booleans, choices, etc.)
+      for (var entry in _fieldValues.entries) {
+        updatedFields[entry.key] = entry.value;
       }
 
       final gristService = context.read<GristService>();
@@ -228,10 +264,13 @@ class _GristFormWidgetState extends State<GristFormWidget> {
   void _cancelEdit() {
     setState(() {
       _isEditing = false;
-      // Reset controllers to original values
+      // Reset controllers and values to original data
       final fields = _record!['fields'] as Map<String, dynamic>? ?? {};
       for (var entry in _controllers.entries) {
         entry.value.text = fields[entry.key]?.toString() ?? '';
+      }
+      for (var entry in _fieldValues.entries) {
+        _fieldValues[entry.key] = fields[entry.key];
       }
     });
   }
@@ -316,42 +355,44 @@ class _GristFormWidgetState extends State<GristFormWidget> {
                   final value = fields[fieldName];
                   final isWritable =
                       widget.config.writableAttributes.contains(fieldName);
-                  final label = _formatFieldName(fieldName);
 
-                  if (_isEditing && isWritable) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: TextFormField(
-                        controller: _controllers[fieldName],
-                        decoration: InputDecoration(
-                          labelText: label,
-                          border: const OutlineInputBorder(),
-                        ),
-                        validator: widget.validators?[fieldName]
-                            ?.asFormValidator(),
-                        enabled: !_isSaving,
-                      ),
-                    );
-                  } else {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            label,
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            value?.toString() ?? '—',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          const Divider(),
-                        ],
-                      ),
-                    );
+                  // Build field configuration
+                  final fieldConfig = widget.fieldConfigs?[fieldName] ??
+                      {'type': 'text', 'label': _formatFieldName(fieldName)};
+
+                  // Set readonly if not writable or not in edit mode
+                  final effectiveConfig = Map<String, dynamic>.from(fieldConfig);
+                  if (!_isEditing || !isWritable) {
+                    effectiveConfig['readonly'] = true;
                   }
+                  if (fieldConfig['label'] == null) {
+                    effectiveConfig['label'] = _formatFieldName(fieldName);
+                  }
+
+                  // Use FieldTypeBuilder for consistent field rendering
+                  return FieldTypeBuilder.buildField(
+                    fieldName: fieldName,
+                    fieldConfig: effectiveConfig,
+                    controller: _controllers[fieldName],
+                    value: _fieldValues[fieldName] ?? value,
+                    onChanged: (newValue) {
+                      if (_isTextBasedField(fieldConfig['type'] as String?)) {
+                        // Text fields are handled by controller
+                      } else {
+                        // Non-text fields update _fieldValues
+                        setState(() {
+                          _fieldValues[fieldName] = newValue;
+                        });
+                      }
+                    },
+                    onFileSelected: (file) {
+                      setState(() {
+                        _fieldValues[fieldName] = file;
+                      });
+                    },
+                    enabled: _isEditing && isWritable && !_isSaving,
+                    validators: widget.validators?[fieldName],
+                  );
                 }),
               ],
             ),
