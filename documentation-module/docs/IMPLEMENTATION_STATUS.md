@@ -1,8 +1,8 @@
 # Implementation Status
 
-## Current Version: 0.10.0
+## Current Version: 0.11.0
 
-This document tracks the implementation status of the flutter_grist_widgets library.
+This document tracks the implementation status of **OdalIsquE** (Odalisque), formerly known as flutter_grist_widgets.
 
 ## ✅ Completed Features
 
@@ -644,6 +644,19 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [x] Real Grist integration test (manual testing)
 
 ## 🎯 Recent Updates
+
+### Version 0.11.0 (November 2025) - Rebranding to OdalIsquE
+- **Rebranding**: Complete project rename
+  * Package name changed from `flutter_grist_widgets` to `odalisque`
+  * Main library file renamed from `flutter_grist_widgets.dart` to `odalisque.dart`
+  * App title updated to "Odalisque" in English and French localizations
+  * Library documentation updated throughout
+  * Homepage URL updated
+- **Breaking Change**: Import statements must be updated
+  * Old: `import 'package:flutter_grist_widgets/flutter_grist_widgets.dart';`
+  * New: `import 'package:odalisque/odalisque.dart';`
+- **No Functional Changes**: All features remain identical to v0.10.0
+- **Migration Required**: Update pubspec.yaml and all import statements
 
 ### Version 0.10.0 (November 2025) - Production Readiness & Internationalization
 - **Internationalization (i18n)**: Full multi-language support

@@ -1,7 +1,7 @@
-name: flutter_grist_widgets
-description: A YAML-driven Flutter application generator for Grist. Build complete data-driven apps with authentication, navigation, and forms from a simple YAML configuration.
-version: 0.10.0
-homepage: https://github.com/yourusername/flutter_grist_widgets
+name: odalisque
+description: Odalisque - A YAML-driven Flutter application generator for Grist. Build complete data-driven apps with authentication, navigation, and forms from a simple YAML configuration.
+version: 0.11.0
+homepage: https://github.com/yourusername/odalisque
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

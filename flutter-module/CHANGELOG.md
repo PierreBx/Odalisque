@@ -1,3 +1,75 @@
+## 0.11.0
+
+### Rebranding Release - OdalIsquE
+
+#### 🎯 Theme: Rebranding to Odalisque
+
+This release rebrands the library from "flutter_grist_widgets" to **OdalIsquE** (Odalisque), giving it a unique and memorable identity while maintaining all existing functionality.
+
+#### Rebranding Changes ⭐
+* **Package Name** - Renamed to `odalisque`
+  * Changed from `flutter_grist_widgets` to `odalisque`
+  * Updated in pubspec.yaml and all imports
+  * Updated homepage URL to reflect new name
+* **Library Name** - Updated main library
+  * Renamed `flutter_grist_widgets.dart` to `odalisque.dart`
+  * Updated library declaration to `library odalisque`
+  * Enhanced library documentation
+* **Application Title** - Updated in all locales
+  * English: "Odalisque"
+  * French: "Odalisque"
+  * Updated in localization files (app_en.arb, app_fr.arb)
+* **Documentation** - Updated throughout
+  * Package description updated
+  * Library documentation enhanced
+  * References updated in documentation
+
+#### About the Name "Odalisque"
+
+The name "Odalisque" was chosen to give this YAML-driven Flutter framework a unique and memorable identity. While maintaining its core purpose of generating data-driven applications for Grist, the new name better reflects its elegant and powerful capabilities.
+
+#### Migration Guide
+
+For existing users, update your import statements:
+
+**Before:**
+```dart
+import 'package:flutter_grist_widgets/flutter_grist_widgets.dart';
+```
+
+**After:**
+```dart
+import 'package:odalisque/odalisque.dart';
+```
+
+Update your `pubspec.yaml`:
+
+**Before:**
+```yaml
+dependencies:
+  flutter_grist_widgets: ^0.10.0
+```
+
+**After:**
+```yaml
+dependencies:
+  odalisque: ^0.11.0
+```
+
+#### Breaking Changes
+* **Package name changed** from `flutter_grist_widgets` to `odalisque`
+* **Main library file renamed** from `flutter_grist_widgets.dart` to `odalisque.dart`
+* **All imports must be updated** to use new package name
+* All functionality remains identical - only naming has changed
+
+#### No Functional Changes
+* All features from v0.10.0 remain unchanged
+* No new features added
+* No bug fixes
+* This is purely a rebranding release
+
+---
+
 ## 0.10.0
 
 ### Major Feature Release - Production Readiness & Internationalization

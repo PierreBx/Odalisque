@@ -2,7 +2,7 @@
   "@@locale": "fr",
 
   "_comment_app": "=== Application ===",
-  "appTitle": "Application Grist",
+  "appTitle": "Odalisque",
 
   "_comment_auth": "=== Authentification ===",
   "login": "Connexion",

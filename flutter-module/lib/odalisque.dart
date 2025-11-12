@@ -1,8 +1,11 @@
-/// A YAML-driven Flutter application generator for Grist.
+/// Odalisque - A YAML-driven Flutter application generator for Grist.
 ///
 /// Build complete data-driven applications with authentication, navigation,
 /// and forms from a simple YAML configuration file.
-library flutter_grist_widgets;
+///
+/// Odalisque provides a comprehensive framework for creating production-ready
+/// Flutter applications powered by Grist databases.
+library odalisque;
 
 // Core exports
 export 'src/grist_app.dart';
