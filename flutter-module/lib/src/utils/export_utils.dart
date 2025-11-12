@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import '../widgets/grist_table_widget.dart';
+import 'excel_export_utils.dart';
+import 'pdf_export_utils.dart';
 
 /// Utility class for exporting table data to various formats
 class ExportUtils {
@@ -53,6 +55,91 @@ class ExportUtils {
     await file.writeAsString(csvString);
 
     return filePath;
+  }
+
+  /// Exports records to Excel format (XLSX)
+  static Future<String> exportToExcel({
+    required List<Map<String, dynamic>> records,
+    required List<TableColumnConfig> columns,
+    required String fileName,
+    bool includeHeaders = true,
+  }) async {
+    final visibleColumns = columns.where((col) => col.visible).toList();
+
+    // Convert to ExcelColumnConfig
+    final excelColumns = visibleColumns.map((col) {
+      return ExcelColumnConfig(
+        name: col.name,
+        label: col.label,
+        type: col.type ?? 'text',
+      );
+    }).toList();
+
+    // Extract fields from records
+    final dataRecords = records.map((record) {
+      final fields = record['fields'] as Map<String, dynamic>? ?? {};
+      return fields;
+    }).toList();
+
+    // Create options
+    final options = ExcelExportOptions(
+      includeHeaders: includeHeaders,
+      freezeHeaderRow: true,
+      autoSizeColumns: true,
+      alternatingRows: true,
+      addBorders: true,
+    );
+
+    // Export using ExcelExportUtils
+    return await ExcelExportUtils.exportToExcel(
+      records: dataRecords,
+      columns: excelColumns,
+      fileName: '$fileName.xlsx',
+      options: options,
+    );
+  }
+
+  /// Exports records to PDF format
+  static Future<String> exportToPdf({
+    required List<Map<String, dynamic>> records,
+    required List<TableColumnConfig> columns,
+    required String fileName,
+    String? title,
+  }) async {
+    final visibleColumns = columns.where((col) => col.visible).toList();
+
+    // Convert to PdfColumnConfig
+    final pdfColumns = visibleColumns.map((col) {
+      return PdfColumnConfig(
+        name: col.name,
+        label: col.label,
+        type: col.type ?? 'text',
+      );
+    }).toList();
+
+    // Extract fields from records
+    final dataRecords = records.map((record) {
+      final fields = record['fields'] as Map<String, dynamic>? ?? {};
+      return fields;
+    }).toList();
+
+    // Create options
+    final options = PdfExportOptions(
+      title: title ?? 'Data Export',
+      includeHeaders: true,
+      includePageNumbers: true,
+      includeTimestamp: true,
+      addBorders: true,
+      alternatingRows: true,
+    );
+
+    // Export using PdfExportUtils
+    return await PdfExportUtils.exportToPdf(
+      records: dataRecords,
+      columns: pdfColumns,
+      fileName: '$fileName.pdf',
+      options: options,
+    );
   }
 
   /// Formats a value for export (removes formatting, converts to plain text)
@@ -128,7 +215,8 @@ class ExportConfig {
 /// Export format options
 enum ExportFormat {
   csv,
-  // Future: excel, pdf
+  excel,
+  pdf,
 }
 
 /// Dialog for configuring export options
@@ -204,6 +292,16 @@ class _ExportDialogState extends State<ExportDialog> {
                     value: ExportFormat.csv,
                     label: Text('CSV'),
                     icon: Icon(Icons.table_chart),
+                  ),
+                  ButtonSegment(
+                    value: ExportFormat.excel,
+                    label: Text('Excel'),
+                    icon: Icon(Icons.grid_on),
+                  ),
+                  ButtonSegment(
+                    value: ExportFormat.pdf,
+                    label: Text('PDF'),
+                    icon: Icon(Icons.picture_as_pdf),
                   ),
                 ],
                 selected: {_format},

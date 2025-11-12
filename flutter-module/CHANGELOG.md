@@ -1,3 +1,184 @@
+## 0.8.0
+
+### Major Feature Release - Data Export & Advanced Table Operations
+
+#### 🎯 Theme: Professional data export and enhanced table customization
+
+This release introduces comprehensive data export capabilities with Excel and PDF support, custom column renderers for better data visualization, and powerful table customization options.
+
+#### Excel Export (XLSX) ⭐
+* **NEW ExcelExportUtils** - Professional Excel export capabilities
+  * Full XLSX format support with formatting
+  * Multi-sheet export support
+  * Cell type preservation (numbers, dates, booleans)
+  * Auto-sizing columns based on content
+  * Freeze panes for header rows
+  * Alternating row colors for readability
+  * Custom styling (header colors, borders, bold text)
+  * Configurable column widths
+  * Summary rows with formulas (SUM, AVERAGE)
+  * Export dialog with preview
+* **NEW ExcelExportDialog** - User-friendly export configuration
+  * File name customization
+  * Column selection
+  * Export options (headers, borders, alternating rows)
+  * Export summary display
+
+#### PDF Export ⭐
+* **NEW PdfExportUtils** - Generate professional PDF reports
+  * PDF generation with customizable layouts
+  * Portrait and landscape orientations
+  * Page numbers and timestamps
+  * Custom headers and footers
+  * Table formatting with borders
+  * Auto page breaks for long tables
+  * Print preview support
+  * Professional styling
+* **NEW PdfExportDialog** - PDF configuration interface
+  * Document title customization
+  * Page format selection (A4, Letter, Landscape)
+  * Header/footer customization
+  * Column selection
+  * Print preview before export
+
+#### Custom Column Renderers ⭐
+* **NEW ColumnRenderer** - Base class for custom cell renderers
+  * Abstract interface for custom visualizations
+  * Export formatting support
+* **NEW StatusBadgeRenderer** - Color-coded status badges
+  * Configurable color mapping
+  * Rounded or pill-shaped badges
+  * Border styling
+* **NEW ProgressBarRenderer** - Visual progress indicators
+  * Min/max value configuration
+  * Custom colors
+  * Percentage text overlay
+  * Configurable height
+* **NEW CurrencyRenderer** - Formatted currency display
+  * Custom currency symbols
+  * Decimal place configuration
+  * Thousand separators
+  * Color coding for positive/negative values
+* **NEW IconRenderer** - Icon-based value display
+  * Value-to-icon mapping
+  * Custom colors per value
+  * Configurable icon size
+* **NEW LinkRenderer** - Clickable URL links
+  * URL truncation options
+  * Custom display text
+  * Underlined styling
+* **NEW ChipRenderer** - Chip-style display
+  * Custom colors
+  * Optional delete icon
+* **NEW RendererFactory** - Create renderers from YAML config
+
+#### Column Customization ⭐
+* **NEW ColumnChooserDialog** - Show/hide and reorder columns
+  * Drag-and-drop column reordering
+  * Show/hide column visibility
+  * Save preferences per table
+  * Reset to defaults
+  * Select all/deselect all
+  * Visual summary of selections
+* **NEW ColumnChooserButton** - Quick access widget
+* **NEW ColumnPreferences** - Persistent column settings
+  * Save column order and visibility
+  * Load saved preferences
+  * Clear preferences
+
+#### Enhanced Export System
+* **Updated ExportUtils** - Now supports all three formats
+  * CSV export (existing, enhanced)
+  * Excel export (NEW)
+  * PDF export (NEW)
+* **Updated ExportDialog** - Multi-format selection
+  * Format picker (CSV/Excel/PDF)
+  * Format-specific options
+  * Unified export interface
+
+#### Developer Experience
+* All export utilities exported for easy use
+* Column renderer system fully extensible
+* YAML configuration support for renderers
+* Type-safe export options
+* Comprehensive error handling
+
+#### Usage Examples
+
+**Excel Export:**
+```dart
+import 'package:flutter_grist_widgets/flutter_grist_widgets.dart';
+
+await ExcelExportUtils.exportToExcel(
+  records: records,
+  columns: columns,
+  fileName: 'my_data.xlsx',
+  options: ExcelExportOptions(
+    includeHeaders: true,
+    autoSizeColumns: true,
+    alternatingRows: true,
+  ),
+);
+```
+
+**PDF Export:**
+```dart
+await PdfExportUtils.exportToPdf(
+  records: records,
+  columns: columns,
+  fileName: 'report.pdf',
+  options: PdfExportOptions(
+    title: 'Monthly Report',
+    includePageNumbers: true,
+    pageFormat: PdfPageFormat.a4,
+  ),
+);
+```
+
+**Custom Renderer (YAML):**
+```yaml
+columns:
+  - name: "status"
+    renderer:
+      type: "status_badge"
+      color_map:
+        active: "#10B981"
+        pending: "#F59E0B"
+        inactive: "#6B7280"
+      shape: "pill"
+  - name: "progress"
+    renderer:
+      type: "progress_bar"
+      min: 0
+      max: 100
+      color: "#3ECF8E"
+      show_text: true
+```
+
+**Column Chooser:**
+```dart
+ColumnChooserButton(
+  columns: tableColumns,
+  tableId: 'my_table',
+  onColumnsUpdated: (updatedColumns) {
+    setState(() {
+      columns = updatedColumns;
+    });
+  },
+)
+```
+
+#### Breaking Changes
+* None - All changes are additive and backward compatible
+* Existing CSV export continues to work unchanged
+
+#### Bug Fixes
+* Improved export file naming consistency
+* Better handling of null values in exports
+* Fixed date formatting in all export formats
+
+---
+
 ## 0.7.0
 
 ### Major Feature Release - Supabase-Inspired Dark Mode & Theme System

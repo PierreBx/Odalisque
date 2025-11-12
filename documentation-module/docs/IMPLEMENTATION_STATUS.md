@@ -1,6 +1,6 @@
 # Implementation Status
 
-## Current Version: 0.7.0
+## Current Version: 0.8.0
 
 This document tracks the implementation status of the flutter_grist_widgets library.
 
@@ -268,17 +268,64 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [x] Client-side filtering with efficient matching
 - [x] Integration with sorting and pagination
 
-#### Data Export (NEW in 0.5.0)
+#### Data Export (NEW in 0.5.0, ENHANCED in 0.8.0)
 - [x] CSV export functionality
+- [x] Excel (XLSX) export functionality (NEW in 0.8.0)
+  * Full XLSX format support with formatting
+  * Multi-sheet export support
+  * Cell type preservation (numbers, dates, booleans)
+  * Auto-sizing columns
+  * Freeze panes for headers
+  * Alternating row colors
+  * Custom styling and borders
+  * Summary rows with formulas
+- [x] PDF export functionality (NEW in 0.8.0)
+  * Professional PDF generation
+  * Portrait and landscape orientations
+  * Page numbers and timestamps
+  * Custom headers and footers
+  * Table formatting with borders
+  * Auto page breaks
+  * Print preview support
 - [x] Export dialog with configuration options
+  * Multi-format selection (CSV/Excel/PDF)
   * Custom file name input
   * Column selection
   * Select/Deselect all columns
   * Include/exclude headers option
   * Export summary display
+  * Format-specific options
 - [x] Type-aware value formatting
 - [x] Save to device storage
 - [x] Proper handling of dates, booleans, files
+
+#### Column Renderers (NEW in 0.8.0)
+- [x] ColumnRenderer base class
+  * Abstract interface for custom visualizations
+  * Export formatting support
+- [x] StatusBadgeRenderer - Color-coded status badges
+  * Configurable color mapping
+  * Rounded or pill-shaped badges
+- [x] ProgressBarRenderer - Visual progress indicators
+  * Min/max value configuration
+  * Custom colors and percentage text
+- [x] CurrencyRenderer - Formatted currency display
+  * Custom symbols and decimal places
+  * Thousand separators
+  * Color coding for positive/negative
+- [x] IconRenderer - Icon-based value display
+- [x] LinkRenderer - Clickable URL links
+- [x] ChipRenderer - Chip-style display
+- [x] RendererFactory - Create renderers from YAML config
+
+#### Column Customization (NEW in 0.8.0)
+- [x] ColumnChooserDialog - Show/hide and reorder columns
+  * Drag-and-drop column reordering
+  * Show/hide column visibility
+  * Save preferences per table
+  * Reset to defaults
+- [x] ColumnChooserButton - Quick access widget
+- [x] ColumnPreferences - Persistent column settings
 
 #### Skeleton Loaders (NEW in 0.3.0)
 - [x] TableSkeletonLoader
@@ -324,9 +371,9 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [x] Server-side search for large datasets (COMPLETED in 0.5.0)
 - [x] Advanced filtering with multiple criteria (COMPLETED in 0.5.0)
 - [x] Export functionality - CSV (COMPLETED in 0.5.0)
-- [ ] Custom column renderers
-- [ ] Column reordering
-- [ ] Export functionality (Excel, PDF)
+- [x] Export functionality - Excel/PDF (COMPLETED in 0.8.0)
+- [x] Custom column renderers (COMPLETED in 0.8.0)
+- [x] Column reordering and visibility (COMPLETED in 0.8.0)
 
 ### Admin Dashboard
 - [ ] Active users widget
@@ -343,12 +390,12 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 
 ### Advanced Features
 - [ ] Offline support with local database
-- [ ] Export functionality (PDF)
 - [ ] Audit logging
 - [ ] Session timeout handling
 - [ ] Remember me functionality
 - [ ] Multi-language support (i18n)
 - [x] Dark mode support (COMPLETED in 0.7.0)
+- [x] Excel/PDF export (COMPLETED in 0.8.0)
 
 ### Advanced Field Types (Still TODO)
 - [x] Reference fields (foreign keys to other tables) (COMPLETED in 0.5.0)
@@ -394,21 +441,22 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 16. ✅ ~~Add responsive design system~~ (COMPLETED in v0.6.0)
 17. ✅ ~~Add image preview for attachments~~ (COMPLETED in v0.6.0)
 18. ✅ ~~Add dark mode support~~ (COMPLETED in v0.7.0)
-19. **Implement Excel/PDF export** (Next priority)
-20. Implement rich text editor
+19. ✅ ~~Implement Excel/PDF export~~ (COMPLETED in v0.8.0)
+20. **Implement rich text editor** (Next priority)
 21. Add offline mode with local storage
 22. Implement session timeout handling
 
 ## 📊 Statistics
 
-- **Total Dart Files**: 53+ (was 50+ in v0.6.0, 47+ in v0.5.0)
-- **Lines of Code**: ~16,000+ (estimated, was ~14,500+ in v0.6.0, ~12,000 in v0.5.0)
-- **Configuration Options**: 95+
+- **Total Dart Files**: 56+ (was 53+ in v0.7.0, 50+ in v0.6.0)
+- **Lines of Code**: ~19,000+ (estimated, was ~16,000+ in v0.7.0, ~14,500+ in v0.6.0)
+- **Configuration Options**: 100+
 - **Page Types**: 4 (Front, Master, Detail, Admin)
-- **Widget Types**: 20+ (Table, Form, FileUpload, Date, Choice, Boolean, MultiSelect, Reference, MultiReference, ImagePreview, ImageGallery, Theme toggles, Responsive components, Skeleton Loaders)
+- **Widget Types**: 25+ (Table, Form, FileUpload, Date, Choice, Boolean, MultiSelect, Reference, MultiReference, ImagePreview, ImageGallery, Theme toggles, Responsive components, Column Renderers, Column Chooser, Skeleton Loaders)
 - **Field Types Supported**: 18 (text, multiline, email, url, phone, integer, numeric, date, time, datetime, choice, multiselect, boolean, file, textarea, reference, multi_reference, reflist)
 - **Filter Operators**: 14 (contains, equals, notEquals, greaterThan, lessThan, between, startsWith, endsWith, isTrue, isFalse, isNull, isNotNull, inList, etc.)
-- **Export Formats**: 1 (CSV, with Excel/PDF planned)
+- **Export Formats**: 3 (CSV, Excel/XLSX, PDF)
+- **Column Renderers**: 7 (Status Badge, Progress Bar, Currency, Icon, Link, Chip, Custom)
 - **Breakpoints**: 3 (mobile < 600px, tablet < 1024px, desktop >= 1024px)
 - **Responsive Helpers**: 5+ utility functions and 4 widgets
 - **Theme Modes**: 3 (light, dark, system)
@@ -434,6 +482,40 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [x] Real Grist integration test (manual testing)
 
 ## 🎯 Recent Updates
+
+### Version 0.8.0 (November 2025) - Data Export & Advanced Table Operations
+- **Excel Export (XLSX)**: Professional Excel export capabilities
+  * Full XLSX format support with formatting
+  * Multi-sheet export support
+  * Cell type preservation (numbers, dates, booleans)
+  * Auto-sizing columns and freeze panes
+  * Alternating row colors and custom styling
+  * Summary rows with formulas (SUM, AVERAGE)
+  * Export dialog with configuration options
+- **PDF Export**: Generate professional PDF reports
+  * PDF generation with customizable layouts
+  * Portrait and landscape orientations
+  * Page numbers, timestamps, headers/footers
+  * Table formatting with borders
+  * Auto page breaks and print preview support
+- **Custom Column Renderers**: Better data visualization
+  * StatusBadgeRenderer for color-coded badges
+  * ProgressBarRenderer for visual progress indicators
+  * CurrencyRenderer for formatted currency display
+  * IconRenderer, LinkRenderer, ChipRenderer
+  * RendererFactory for YAML configuration
+- **Column Customization**: Show/hide and reorder columns
+  * ColumnChooserDialog with drag-and-drop reordering
+  * Column visibility toggle
+  * Save preferences per table
+  * ColumnChooserButton for quick access
+- **Enhanced Export System**: Unified export with three formats
+  * CSV, Excel, and PDF support
+  * Multi-format selection in export dialog
+  * Format-specific options
+- **Code Additions**: +3,000 lines of new functionality
+- **New Files**: 4 new files (excel_export_utils.dart, pdf_export_utils.dart, column_renderer.dart, column_chooser_dialog.dart)
+- **No Breaking Changes**: All additions are backward compatible
 
 ### Version 0.7.0 (November 2025) - Supabase-Inspired Dark Mode & Theme System
 - **Dark Mode Implementation**: Complete Supabase-inspired dark theme
@@ -552,7 +634,9 @@ The library is now in a **production-ready** state for most business application
 - **Automatic field type detection** from Grist schema
 - **Server-side search, filtering, and sorting** for large datasets
 - **Advanced column filtering** with 14 operators
-- **CSV export** with configurable options
+- **Data export** in multiple formats (CSV, Excel/XLSX, PDF)
+- **Custom column renderers** for data visualization (status badges, progress bars, currency, icons)
+- **Column customization** with show/hide and drag-and-drop reordering
 - **Responsive design system** for mobile, tablet, and desktop
 - **Image preview with lightbox** for rich media display
 - **Dark mode** with Supabase-inspired design and theme switching
@@ -577,8 +661,9 @@ The library is now in a **production-ready** state for most business application
 - ✅ Multi-platform apps (mobile, tablet, desktop) with responsive design
 - ✅ Image-heavy applications with rich media support
 - ✅ Apps requiring dark mode with customizable themes
+- ✅ Apps requiring professional data export (CSV, Excel, PDF)
+- ✅ Applications with custom data visualizations (status badges, progress bars, currency formatting)
 - ✅ Prototyping and MVPs
 - ⚠️ Advanced features (offline mode, rich text editor) still in development
-- ⚠️ Only CSV export available (Excel/PDF coming soon)
 
-**Next Major Milestone**: Version 0.8.0 will focus on Excel/PDF export and rich text editor.
+**Next Major Milestone**: Version 0.9.0 will focus on rich text editor and batch operations.
