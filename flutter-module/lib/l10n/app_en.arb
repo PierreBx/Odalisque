@@ -2,7 +2,7 @@
   "@@locale": "en",
 
   "_comment_app": "=== Application ===",
-  "appTitle": "Grist App",
+  "appTitle": "Odalisque",
   "@appTitle": {
     "description": "The title of the application"
   },
