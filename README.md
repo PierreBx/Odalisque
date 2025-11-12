@@ -1,6 +1,6 @@
-# Flutter Grist Widgets
+# Odalisque
 
-A Flutter library for building complete data-driven applications from Grist using YAML configuration.
+![odalisque.jpg](documentation-module/top-assets/odalisque.jpg)
 
 ## 🗂️ Project Structure
 
