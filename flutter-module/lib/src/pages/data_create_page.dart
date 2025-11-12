@@ -5,6 +5,7 @@ import '../config/app_config.dart';
 import '../services/grist_service.dart';
 import '../utils/validators.dart';
 import '../widgets/file_upload_widget.dart';
+import '../utils/notifications.dart';
 
 /// Form view for creating a new record.
 class DataCreatePage extends StatefulWidget {
@@ -126,11 +127,9 @@ class _DataCreatePageState extends State<DataCreatePage> {
           _isSaving = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Record created successfully (ID: $newRecordId)'),
-            backgroundColor: Colors.green,
-          ),
+        AppNotifications.showSuccess(
+          context,
+          'Record created successfully (ID: $newRecordId)',
         );
 
         // Navigate back
@@ -147,11 +146,9 @@ class _DataCreatePageState extends State<DataCreatePage> {
           _isSaving = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to create record: $e'),
-            backgroundColor: Colors.red,
-          ),
+        AppNotifications.showError(
+          context,
+          'Failed to create record: $e',
         );
       }
     }

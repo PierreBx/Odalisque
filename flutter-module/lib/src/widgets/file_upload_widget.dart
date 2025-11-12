@@ -45,6 +45,7 @@ class FileUploadWidget extends StatefulWidget {
 class _FileUploadWidgetState extends State<FileUploadWidget> {
   FileUploadResult? _uploadedFile;
   bool _isDragging = false;
+  bool _isLoading = false;
   String? _error;
 
   @override
@@ -60,6 +61,11 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
 
   Future<void> _pickFile() async {
     if (widget.readOnly) return;
+
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
 
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -79,6 +85,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
           setState(() {
             _error =
                 'File too large. Max size: ${(widget.maxFileSize! / 1024 / 1024).toStringAsFixed(2)} MB';
+            _isLoading = false;
           });
           return;
         }
@@ -94,13 +101,19 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
         setState(() {
           _uploadedFile = uploadResult;
           _error = null;
+          _isLoading = false;
         });
 
         widget.onFileSelected?.call(uploadResult);
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
       }
     } catch (e) {
       setState(() {
         _error = 'Failed to pick file: $e';
+        _isLoading = false;
       });
     }
   }
@@ -135,7 +148,7 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
         // Upload area
         if (_uploadedFile == null)
           GestureDetector(
-            onTap: widget.readOnly ? null : _pickFile,
+            onTap: widget.readOnly || _isLoading ? null : _pickFile,
             child: MouseRegion(
               onEnter: (_) => setState(() => _isDragging = true),
               onExit: (_) => setState(() => _isDragging = false),
@@ -155,47 +168,63 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
                       ? Theme.of(context).primaryColor.withOpacity(0.1)
                       : Colors.grey.shade50,
                 ),
-                child: Column(
-                  children: [
-                    Icon(
-                      Icons.cloud_upload,
-                      size: 48,
-                      color: _isDragging
-                          ? Theme.of(context).primaryColor
-                          : Colors.grey.shade600,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      widget.readOnly
-                          ? 'No file selected'
-                          : 'Drop file here or click to browse',
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontSize: 16,
+                child: _isLoading
+                    ? Column(
+                        children: [
+                          CircularProgressIndicator(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Loading file...',
+                            style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Column(
+                        children: [
+                          Icon(
+                            Icons.cloud_upload,
+                            size: 48,
+                            color: _isDragging
+                                ? Theme.of(context).primaryColor
+                                : Colors.grey.shade600,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            widget.readOnly
+                                ? 'No file selected'
+                                : 'Drop file here or click to browse',
+                            style: TextStyle(
+                              color: Colors.grey.shade700,
+                              fontSize: 16,
+                            ),
+                          ),
+                          if (widget.allowedExtensions != null) ...[
+                            const SizedBox(height: 8),
+                            Text(
+                              'Allowed: ${widget.allowedExtensions!.join(", ")}',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                          if (widget.maxFileSize != null) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              'Max size: ${(widget.maxFileSize! / 1024 / 1024).toStringAsFixed(2)} MB',
+                              style: TextStyle(
+                                color: Colors.grey.shade600,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
-                    ),
-                    if (widget.allowedExtensions != null) ...[
-                      const SizedBox(height: 8),
-                      Text(
-                        'Allowed: ${widget.allowedExtensions!.join(", ")}',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                    if (widget.maxFileSize != null) ...[
-                      const SizedBox(height: 4),
-                      Text(
-                        'Max size: ${(widget.maxFileSize! / 1024 / 1024).toStringAsFixed(2)} MB',
-                        style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
               ),
             ),
           ),

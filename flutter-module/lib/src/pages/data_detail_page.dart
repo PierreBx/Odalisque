@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../config/app_config.dart';
 import '../services/grist_service.dart';
 import '../utils/validators.dart';
+import '../widgets/skeleton_loader.dart';
+import '../utils/notifications.dart';
 
 /// Form view for displaying and editing a single record.
 class DataDetailPage extends StatefulWidget {
@@ -141,11 +143,9 @@ class _DataDetailPageState extends State<DataDetailPage> {
           _isEditing = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Record updated successfully'),
-            backgroundColor: Colors.green,
-          ),
+        AppNotifications.showSuccess(
+          context,
+          'Record updated successfully',
         );
 
         // Reload data to reflect changes
@@ -157,11 +157,9 @@ class _DataDetailPageState extends State<DataDetailPage> {
           _isSaving = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save: $e'),
-            backgroundColor: Colors.red,
-          ),
+        AppNotifications.showError(
+          context,
+          'Failed to save: $e',
         );
       }
     }
@@ -202,11 +200,9 @@ class _DataDetailPageState extends State<DataDetailPage> {
       await gristService.deleteRecord(tableName, recordId);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Record deleted successfully'),
-            backgroundColor: Colors.green,
-          ),
+        AppNotifications.showSuccess(
+          context,
+          'Record deleted successfully',
         );
 
         // Navigate back
@@ -221,11 +217,9 @@ class _DataDetailPageState extends State<DataDetailPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to delete: $e'),
-            backgroundColor: Colors.red,
-          ),
+        AppNotifications.showError(
+          context,
+          'Failed to delete: $e',
         );
       }
     }
@@ -245,7 +239,7 @@ class _DataDetailPageState extends State<DataDetailPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const FormSkeletonLoader(fieldCount: 6);
     }
 
     if (_error != null) {
