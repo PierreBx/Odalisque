@@ -11,6 +11,7 @@ export 'src/config/yaml_loader.dart';
 export 'src/models/user_model.dart';
 export 'src/services/grist_service.dart';
 export 'src/providers/auth_provider.dart';
+export 'src/providers/language_provider.dart';
 export 'src/utils/validators.dart';
 
 // Widget exports
@@ -39,11 +40,15 @@ export 'src/utils/pdf_export_utils.dart';
 export 'src/utils/responsive_utils.dart';
 export 'src/utils/theme_utils.dart';
 export 'src/utils/batch_operations_utils.dart';
+export 'src/utils/security_utils.dart';
 
 // Theme exports
 export 'src/theme/app_theme.dart';
 export 'src/theme/theme_provider.dart';
 export 'src/widgets/theme_toggle_widget.dart';
+
+// Internationalization exports
+export 'src/widgets/language_switcher_widget.dart';
 
 // Page exports
 export 'src/pages/data_create_page.dart';

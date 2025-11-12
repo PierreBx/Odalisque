@@ -1,0 +1,528 @@
+{
+  "@@locale": "en",
+
+  "_comment_app": "=== Application ===",
+  "appTitle": "Grist App",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+
+  "_comment_auth": "=== Authentication ===",
+  "login": "Login",
+  "@login": {
+    "description": "Login button text"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email field label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password field label"
+  },
+  "emailHint": "Enter your email",
+  "@emailHint": {
+    "description": "Email field hint"
+  },
+  "passwordHint": "Enter your password",
+  "@passwordHint": {
+    "description": "Password field hint"
+  },
+  "rememberMe": "Remember me",
+  "@rememberMe": {
+    "description": "Remember me checkbox label"
+  },
+  "forgotPassword": "Forgot password?",
+  "@forgotPassword": {
+    "description": "Forgot password link text"
+  },
+  "invalidCredentials": "Invalid credentials",
+  "@invalidCredentials": {
+    "description": "Invalid login credentials error"
+  },
+  "accountInactive": "Account is inactive",
+  "@accountInactive": {
+    "description": "Account inactive error"
+  },
+  "loginFailed": "Login failed: {error}",
+  "@loginFailed": {
+    "description": "Login failed error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "accountLocked": "Account locked due to too many failed login attempts. Please try again in {minutes} minutes.",
+  "@accountLocked": {
+    "description": "Account locked error message",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionExpired": "Your session has expired. Please login again.",
+  "@sessionExpired": {
+    "description": "Session expired message"
+  },
+  "logoutConfirmTitle": "Confirm Logout",
+  "@logoutConfirmTitle": {
+    "description": "Logout confirmation dialog title"
+  },
+  "logoutConfirmMessage": "Are you sure you want to logout?",
+  "@logoutConfirmMessage": {
+    "description": "Logout confirmation dialog message"
+  },
+
+  "_comment_passwordReset": "=== Password Reset ===",
+  "resetPassword": "Reset Password",
+  "@resetPassword": {
+    "description": "Reset password button text"
+  },
+  "resetPasswordTitle": "Reset Your Password",
+  "@resetPasswordTitle": {
+    "description": "Reset password page title"
+  },
+  "resetPasswordInstructions": "Enter your email address and we'll help you reset your password.",
+  "@resetPasswordInstructions": {
+    "description": "Reset password instructions"
+  },
+  "sendResetLink": "Send Reset Link",
+  "@sendResetLink": {
+    "description": "Send reset link button"
+  },
+  "resetLinkSent": "Password reset instructions have been sent to your email.",
+  "@resetLinkSent": {
+    "description": "Reset link sent confirmation"
+  },
+  "newPassword": "New Password",
+  "@newPassword": {
+    "description": "New password field label"
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Confirm password field label"
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Password mismatch error"
+  },
+  "passwordResetSuccess": "Password reset successfully",
+  "@passwordResetSuccess": {
+    "description": "Password reset success message"
+  },
+
+  "_comment_common": "=== Common Actions ===",
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button text"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button text"
+  },
+  "create": "Create",
+  "@create": {
+    "description": "Create button text"
+  },
+  "update": "Update",
+  "@update": {
+    "description": "Update button text"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Back button text"
+  },
+  "next": "Next",
+  "@next": {
+    "description": "Next button text"
+  },
+  "previous": "Previous",
+  "@previous": {
+    "description": "Previous button text"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm button text"
+  },
+  "yes": "Yes",
+  "@yes": {
+    "description": "Yes button text"
+  },
+  "no": "No",
+  "@no": {
+    "description": "No button text"
+  },
+  "ok": "OK",
+  "@ok": {
+    "description": "OK button text"
+  },
+  "search": "Search",
+  "@search": {
+    "description": "Search field label"
+  },
+  "filter": "Filter",
+  "@filter": {
+    "description": "Filter button text"
+  },
+  "sort": "Sort",
+  "@sort": {
+    "description": "Sort button text"
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Refresh button text"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading indicator text"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error label"
+  },
+  "success": "Success",
+  "@success": {
+    "description": "Success label"
+  },
+  "warning": "Warning",
+  "@warning": {
+    "description": "Warning label"
+  },
+  "info": "Info",
+  "@info": {
+    "description": "Info label"
+  },
+
+  "_comment_crud": "=== CRUD Operations ===",
+  "createNew": "Create New",
+  "@createNew": {
+    "description": "Create new button text"
+  },
+  "editRecord": "Edit Record",
+  "@editRecord": {
+    "description": "Edit record button text"
+  },
+  "deleteRecord": "Delete Record",
+  "@deleteRecord": {
+    "description": "Delete record button text"
+  },
+  "deleteConfirmTitle": "Confirm Delete",
+  "@deleteConfirmTitle": {
+    "description": "Delete confirmation dialog title"
+  },
+  "deleteConfirmMessage": "Are you sure you want to delete this record? This action cannot be undone.",
+  "@deleteConfirmMessage": {
+    "description": "Delete confirmation dialog message"
+  },
+  "recordSaved": "Record saved successfully",
+  "@recordSaved": {
+    "description": "Record saved success message"
+  },
+  "recordDeleted": "Record deleted successfully",
+  "@recordDeleted": {
+    "description": "Record deleted success message"
+  },
+  "recordCreated": "Record created successfully",
+  "@recordCreated": {
+    "description": "Record created success message"
+  },
+  "recordUpdated": "Record updated successfully",
+  "@recordUpdated": {
+    "description": "Record updated success message"
+  },
+  "saveFailed": "Save failed: {error}",
+  "@saveFailed": {
+    "description": "Save failed error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFailed": "Delete failed: {error}",
+  "@deleteFailed": {
+    "description": "Delete failed error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "_comment_table": "=== Table & Lists ===",
+  "noRecordsFound": "No records found",
+  "@noRecordsFound": {
+    "description": "Empty table message"
+  },
+  "recordsCount": "{count} {count, plural, =1{record} other{records}}",
+  "@recordsCount": {
+    "description": "Records count label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "showingRecords": "Showing {start} to {end} of {total}",
+  "@showingRecords": {
+    "description": "Pagination info",
+    "placeholders": {
+      "start": {
+        "type": "int"
+      },
+      "end": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "page": "Page",
+  "@page": {
+    "description": "Page label"
+  },
+  "of": "of",
+  "@of": {
+    "description": "Of label (e.g., Page 1 of 10)"
+  },
+  "rowsPerPage": "Rows per page",
+  "@rowsPerPage": {
+    "description": "Rows per page label"
+  },
+  "firstPage": "First",
+  "@firstPage": {
+    "description": "First page button"
+  },
+  "lastPage": "Last",
+  "@lastPage": {
+    "description": "Last page button"
+  },
+
+  "_comment_export": "=== Export & Import ===",
+  "export": "Export",
+  "@export": {
+    "description": "Export button text"
+  },
+  "exportData": "Export Data",
+  "@exportData": {
+    "description": "Export data button text"
+  },
+  "exportFormat": "Export Format",
+  "@exportFormat": {
+    "description": "Export format label"
+  },
+  "exportSuccess": "Data exported successfully",
+  "@exportSuccess": {
+    "description": "Export success message"
+  },
+  "exportFailed": "Export failed: {error}",
+  "@exportFailed": {
+    "description": "Export failed error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "selectColumns": "Select Columns",
+  "@selectColumns": {
+    "description": "Select columns label"
+  },
+  "selectAll": "Select All",
+  "@selectAll": {
+    "description": "Select all button text"
+  },
+  "deselectAll": "Deselect All",
+  "@deselectAll": {
+    "description": "Deselect all button text"
+  },
+  "includeHeaders": "Include Headers",
+  "@includeHeaders": {
+    "description": "Include headers checkbox label"
+  },
+
+  "_comment_batch": "=== Batch Operations ===",
+  "batchOperations": "Batch Operations",
+  "@batchOperations": {
+    "description": "Batch operations label"
+  },
+  "selectedItems": "{count} selected",
+  "@selectedItems": {
+    "description": "Selected items count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "batchDelete": "Delete Selected",
+  "@batchDelete": {
+    "description": "Batch delete button text"
+  },
+  "batchExport": "Export Selected",
+  "@batchExport": {
+    "description": "Batch export button text"
+  },
+  "batchDuplicate": "Duplicate Selected",
+  "@batchDuplicate": {
+    "description": "Batch duplicate button text"
+  },
+  "batchArchive": "Archive Selected",
+  "@batchArchive": {
+    "description": "Batch archive button text"
+  },
+  "batchDeleteConfirm": "Are you sure you want to delete {count} {count, plural, =1{item} other{items}}?",
+  "@batchDeleteConfirm": {
+    "description": "Batch delete confirmation message",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "batchOperationSuccess": "Successfully processed {count} {count, plural, =1{item} other{items}}",
+  "@batchOperationSuccess": {
+    "description": "Batch operation success message",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "batchOperationPartial": "Processed {success} {success, plural, =1{item} other{items}}, {failure} failed",
+  "@batchOperationPartial": {
+    "description": "Batch operation partial success message",
+    "placeholders": {
+      "success": {
+        "type": "int"
+      },
+      "failure": {
+        "type": "int"
+      }
+    }
+  },
+
+  "_comment_validation": "=== Validation ===",
+  "required": "This field is required",
+  "@required": {
+    "description": "Required field validation error"
+  },
+  "invalidEmail": "Invalid email address",
+  "@invalidEmail": {
+    "description": "Invalid email validation error"
+  },
+  "invalidUrl": "Invalid URL",
+  "@invalidUrl": {
+    "description": "Invalid URL validation error"
+  },
+  "minLength": "Minimum length is {length} characters",
+  "@minLength": {
+    "description": "Minimum length validation error",
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "maxLength": "Maximum length is {length} characters",
+  "@maxLength": {
+    "description": "Maximum length validation error",
+    "placeholders": {
+      "length": {
+        "type": "int"
+      }
+    }
+  },
+  "invalidValue": "Invalid value",
+  "@invalidValue": {
+    "description": "Invalid value validation error"
+  },
+
+  "_comment_settings": "=== Settings ===",
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings menu item"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language settings label"
+  },
+  "theme": "Theme",
+  "@theme": {
+    "description": "Theme settings label"
+  },
+  "lightMode": "Light Mode",
+  "@lightMode": {
+    "description": "Light mode label"
+  },
+  "darkMode": "Dark Mode",
+  "@darkMode": {
+    "description": "Dark mode label"
+  },
+  "systemMode": "System Default",
+  "@systemMode": {
+    "description": "System default theme label"
+  },
+  "appearance": "Appearance",
+  "@appearance": {
+    "description": "Appearance settings label"
+  },
+  "accentColor": "Accent Color",
+  "@accentColor": {
+    "description": "Accent color settings label"
+  },
+
+  "_comment_files": "=== File Upload ===",
+  "uploadFile": "Upload File",
+  "@uploadFile": {
+    "description": "Upload file button text"
+  },
+  "chooseFile": "Choose File",
+  "@chooseFile": {
+    "description": "Choose file button text"
+  },
+  "dragDropFiles": "Drag and drop files here",
+  "@dragDropFiles": {
+    "description": "Drag and drop instruction"
+  },
+  "fileSizeExceeded": "File size exceeds maximum allowed size",
+  "@fileSizeExceeded": {
+    "description": "File size error"
+  },
+  "invalidFileType": "Invalid file type",
+  "@invalidFileType": {
+    "description": "Invalid file type error"
+  },
+  "fileUploadSuccess": "File uploaded successfully",
+  "@fileUploadSuccess": {
+    "description": "File upload success message"
+  },
+  "fileUploadFailed": "File upload failed: {error}",
+  "@fileUploadFailed": {
+    "description": "File upload failed error message",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  }
+}

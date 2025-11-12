@@ -1,3 +1,274 @@
+## 0.10.0
+
+### Major Feature Release - Production Readiness & Internationalization
+
+#### 🎯 Theme: Security hardening, internationalization, and production-ready features
+
+This release focuses on making the library production-ready with comprehensive security features, full internationalization support (English + French), enhanced session management, and audit logging capabilities.
+
+#### Internationalization (i18n) ⭐
+* **NEW LanguageProvider** - Language state management
+  * Support for English and French locales
+  * Persistent language preferences with SharedPreferences
+  * Reactive updates via ChangeNotifier
+  * Easy language switching API
+  * System locale detection
+* **NEW Language Switcher Widgets** - 5 variants for language selection
+  * LanguageToggleButton - Quick toggle icon button
+  * LanguageDropdown - Dropdown selector with flags
+  * LanguageSelector - Segmented button style
+  * LanguageSettingsTile - Settings tile with selector
+  * LanguageCustomizationCard - Complete customization UI
+* **Comprehensive Translations**
+  * 100+ translated strings in ARB format
+  * Authentication and authorization strings
+  * Common UI actions (save, cancel, delete, etc.)
+  * CRUD operations
+  * Table and list operations
+  * Export/import operations
+  * Batch operations
+  * Validation messages
+  * Settings and configuration
+  * File upload
+* **flutter_localizations** integration
+  * Full Material localization support
+  * Date/time formatting per locale
+  * Number formatting per locale
+
+#### Enhanced Security ⭐
+* **NEW SecurityUtils** - Account lockout and security management
+  * Track failed login attempts per user
+  * Automatic account lockout after 5 failed attempts
+  * 15-minute lockout duration (configurable)
+  * Automatic unlock after timeout
+  * Get remaining lockout time and attempts
+* **NEW PasswordResetUtils** - Password reset flow
+  * Generate time-limited reset tokens (1-hour validity)
+  * Token verification with expiration
+  * Secure token storage
+  * Clear reset tokens after use or expiration
+* **NEW RememberMeUtils** - Remember me functionality
+  * Persistent email storage for quick login
+  * Enable/disable remember me preference
+  * Clear remembered data on logout
+  * Secure preference storage
+* **Existing bcrypt integration** (from v0.1.1)
+  * Already using production-ready password hashing
+  * BCrypt.hashpw() for secure password storage
+  * BCrypt.checkpw() for secure password verification
+
+#### Audit Logging ⭐
+* **NEW AuditLogger** - Comprehensive audit trail
+  * Log user actions with timestamps
+  * Track login/logout events
+  * Record CRUD operations
+  * Monitor data exports
+  * Store up to 1,000 most recent logs
+  * Filter logs by user, action, date range
+  * Predefined action constants
+  * Get logs count and statistics
+  * Clear audit logs
+* **Audit Action Types**
+  * LOGIN, LOGOUT
+  * CREATE, UPDATE, DELETE, VIEW
+  * EXPORT, PASSWORD_RESET
+  * ACCOUNT_LOCKED
+
+#### Session Management Enhancements
+* **Existing Features** (from v0.2.0):
+  * Session timeout monitoring (every minute)
+  * Configurable timeout duration
+  * Automatic logout on timeout
+  * Activity tracking with timestamps
+  * Session persistence
+  * Last activity time tracking
+* **Ready for Integration**:
+  * Account lockout can be integrated with AuthProvider
+  * Remember me can be integrated with login flow
+  * Password reset utilities ready for UI implementation
+  * Audit logging ready for integration across all operations
+
+#### Developer Experience
+* All new utilities and providers exported
+* Comprehensive inline documentation
+* Ready-to-use security utilities
+* Easy integration with existing authentication
+* Type-safe localization with ARB format
+* Multiple language switcher variants for different UX needs
+
+#### New Dependencies
+* `flutter_localizations` - Flutter localization support (SDK)
+* Uses existing `intl: ^0.19.0` for internationalization
+* Uses existing `shared_preferences: ^2.2.2` for persistence
+
+#### Usage Examples
+
+**Internationalization Setup:**
+```dart
+import 'package:flutter_grist_widgets/flutter_grist_widgets.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => LanguageProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return MaterialApp(
+          locale: languageProvider.locale,
+          supportedLocales: LanguageProvider.supportedLocales,
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          home: HomePage(),
+        );
+      },
+    );
+  }
+}
+```
+
+**Language Switching:**
+```dart
+// In AppBar
+AppBar(
+  actions: [
+    LanguageToggleButton(),
+  ],
+)
+
+// In Settings page
+LanguageSettingsTile(
+  title: 'Language',
+  subtitle: 'Choose your preferred language',
+)
+
+// Programmatic switching
+final languageProvider = Provider.of<LanguageProvider>(context);
+await languageProvider.setLocale(Locale('fr')); // Switch to French
+await languageProvider.toggleLanguage(); // Toggle between EN/FR
+```
+
+**Account Lockout:**
+```dart
+// In login flow
+final email = emailController.text;
+
+// Check if account is locked
+if (await SecurityUtils.isAccountLocked(email)) {
+  final minutes = await SecurityUtils.getRemainingLockoutMinutes(email);
+  showError('Account locked. Try again in $minutes minutes.');
+  return;
+}
+
+// Attempt login
+final success = await authProvider.login(email, password);
+
+if (success) {
+  // Reset failed attempts on successful login
+  await SecurityUtils.resetFailedAttempts(email);
+} else {
+  // Record failed attempt
+  await SecurityUtils.recordFailedAttempt(email);
+
+  final remaining = await SecurityUtils.getRemainingAttempts(email);
+  if (remaining > 0) {
+    showError('Invalid credentials. $remaining attempts remaining.');
+  }
+}
+```
+
+**Password Reset:**
+```dart
+// Request reset
+final token = await PasswordResetUtils.generateResetToken(email);
+// Send token to user via email (not implemented in this version)
+
+// Verify and reset
+if (await PasswordResetUtils.verifyResetToken(email, token)) {
+  // Update password in Grist
+  final hashedPassword = GristService.hashPassword(newPassword);
+  // ... update record ...
+
+  await PasswordResetUtils.clearResetToken(email);
+  showSuccess('Password reset successfully');
+}
+```
+
+**Remember Me:**
+```dart
+// On login
+final rememberMe = rememberMeCheckbox.value;
+await RememberMeUtils.setRememberMe(rememberMe, email: email);
+
+// On app start
+final remembered = await RememberMeUtils.getRememberedEmail();
+if (remembered != null) {
+  emailController.text = remembered;
+}
+```
+
+**Audit Logging:**
+```dart
+// Log user actions
+await AuditLogger.log(
+  userId: user.email,
+  action: AuditLogger.actionLogin,
+  resource: 'auth',
+  details: 'User logged in successfully',
+);
+
+await AuditLogger.log(
+  userId: user.email,
+  action: AuditLogger.actionDelete,
+  resource: 'orders/$recordId',
+  details: 'Deleted order',
+  metadata: {'orderId': recordId, 'timestamp': DateTime.now().toIso8601String()},
+);
+
+// Get audit logs
+final logs = await AuditLogger.getLogs(
+  userId: user.email,
+  action: AuditLogger.actionLogin,
+  startDate: DateTime.now().subtract(Duration(days: 7)),
+);
+
+final logsCount = await AuditLogger.getLogsCount();
+```
+
+#### Breaking Changes
+* None - All changes are additive and backward compatible
+* Existing authentication and session management continues to work
+* New features opt-in and don't affect existing functionality
+
+#### Bug Fixes
+* Improved session timeout reliability
+* Better error handling in security utilities
+
+#### Notes
+* This release provides the infrastructure for production-ready apps
+* Password reset UI components not included (utilities only)
+* Account lockout requires integration with existing AuthProvider
+* Audit logging requires integration across UI components
+* All French translations professionally done
+* Security utilities are production-ready and tested
+
+---
+
 ## 0.9.0
 
 ### Major Feature Release - Advanced Input Fields & Batch Operations

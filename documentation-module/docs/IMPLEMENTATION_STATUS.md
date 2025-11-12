@@ -1,6 +1,6 @@
 # Implementation Status
 
-## Current Version: 0.9.0
+## Current Version: 0.10.0
 
 This document tracks the implementation status of the flutter_grist_widgets library.
 
@@ -289,6 +289,67 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [x] BatchSelectionCheckbox - Row selection checkbox
 - [x] BatchSelectAllCheckbox - Header checkbox (tristate support)
 
+#### Internationalization (NEW in 0.10.0)
+- [x] LanguageProvider - Language state management
+  * Support for English and French locales
+  * Persistent language preferences
+  * Reactive updates via ChangeNotifier
+  * Easy language switching API
+  * Get current language name and code
+- [x] Language Switcher Widgets (5 variants)
+  * LanguageToggleButton - Quick toggle button
+  * LanguageDropdown - Dropdown with flags
+  * LanguageSelector - Segmented button style
+  * LanguageSettingsTile - Settings tile
+  * LanguageCustomizationCard - Full customization UI
+- [x] Comprehensive Translations (100+ strings)
+  * English (en) and French (fr) ARB files
+  * Authentication strings
+  * Common UI actions
+  * CRUD operations
+  * Table and list operations
+  * Export/import operations
+  * Batch operations
+  * Validation messages
+  * Settings and file upload
+- [x] flutter_localizations integration
+  * Material localization support
+  * Date/time formatting per locale
+  * Number formatting per locale
+
+#### Enhanced Security (NEW in 0.10.0)
+- [x] SecurityUtils - Account lockout management
+  * Track failed login attempts (max 5)
+  * Automatic account lockout (15 minutes)
+  * Automatic unlock after timeout
+  * Get remaining lockout time and attempts
+  * Reset failed attempts on successful login
+- [x] PasswordResetUtils - Password reset flow
+  * Generate time-limited reset tokens (1-hour validity)
+  * Token verification with expiration
+  * Secure token storage
+  * Clear reset tokens after use
+- [x] RememberMeUtils - Remember me functionality
+  * Persistent email storage
+  * Enable/disable remember me preference
+  * Get remembered email
+  * Clear remembered data
+- [x] bcrypt integration (from v0.1.1)
+  * Production-ready password hashing
+  * BCrypt.hashpw() and BCrypt.checkpw()
+
+#### Audit Logging (NEW in 0.10.0)
+- [x] AuditLogger - Comprehensive audit trail
+  * Log user actions with timestamps
+  * Track login/logout events
+  * Record CRUD operations (CREATE, UPDATE, DELETE, VIEW)
+  * Monitor data exports
+  * Store up to 1,000 most recent logs
+  * Filter logs by user, action, date range
+  * Predefined action constants
+  * Get logs count and statistics
+  * Clear audit logs
+
 #### Responsive Design (NEW in 0.6.0)
 - [x] ResponsiveUtils utility class
   * Breakpoint detection (mobile/tablet/desktop)
@@ -537,12 +598,13 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 
 ## 📊 Statistics
 
-- **Total Dart Files**: 61+ (was 56+ in v0.8.0, 53+ in v0.7.0, 50+ in v0.6.0)
-- **Lines of Code**: ~22,000+ (estimated, was ~19,000+ in v0.8.0, ~16,000+ in v0.7.0, ~14,500+ in v0.6.0)
-- **Configuration Options**: 120+
+- **Total Dart Files**: 64+ (was 61+ in v0.9.0, 56+ in v0.8.0, 53+ in v0.7.0)
+- **Lines of Code**: ~24,000+ (estimated, was ~22,000+ in v0.9.0, ~19,000+ in v0.8.0, ~16,000+ in v0.7.0)
+- **Configuration Options**: 140+
 - **Page Types**: 4 (Front, Master, Detail, Admin)
-- **Widget Types**: 33+ (Table, Form, FileUpload, Date, Choice, Boolean, MultiSelect, Reference, MultiReference, ImagePreview, ImageGallery, Theme toggles, Responsive components, Column Renderers, Column Chooser, RichText, ColorPicker, Rating, BatchActionBar, Skeleton Loaders)
+- **Widget Types**: 38+ (Table, Form, FileUpload, Date, Choice, Boolean, MultiSelect, Reference, MultiReference, ImagePreview, ImageGallery, Theme toggles, Language switchers, Responsive components, Column Renderers, Column Chooser, RichText, ColorPicker, Rating, BatchActionBar, Skeleton Loaders)
 - **Field Types Supported**: 21 (text, multiline, email, url, phone, integer, numeric, date, time, datetime, choice, multiselect, boolean, file, textarea, reference, multi_reference, reflist, rich_text, color, rating)
+- **Supported Languages**: 2 (English, French) with 100+ translated strings each
 - **Filter Operators**: 14 (contains, equals, notEquals, greaterThan, lessThan, between, startsWith, endsWith, isTrue, isFalse, isNull, isNotNull, inList, etc.)
 - **Export Formats**: 3 (CSV, Excel/XLSX, PDF)
 - **Column Renderers**: 7 (Status Badge, Progress Bar, Currency, Icon, Link, Chip, Custom)
@@ -555,6 +617,12 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - **Responsive Helpers**: 5+ utility functions and 4 widgets
 - **Theme Modes**: 3 (light, dark, system)
 - **Theme Toggle Widgets**: 5 (button, selector, switch, settings tile, customization card)
+- **Language Switcher Widgets**: 5 (toggle button, dropdown, selector, settings tile, customization card)
+- **Security Utils**: 4 (Account Lockout, Password Reset, Remember Me, Audit Logging)
+- **Audit Actions**: 8 predefined (LOGIN, LOGOUT, CREATE, UPDATE, DELETE, VIEW, EXPORT, PASSWORD_RESET)
+- **Max Audit Logs**: 1,000 most recent entries
+- **Account Lockout**: 5 failed attempts, 15-minute lockout
+- **Password Reset Token**: 1-hour validity
 - **Accent Colors**: 8 predefined (customizable)
 - **Validator Types**: 8 (all implemented)
 - **Test Files**: 12
@@ -576,6 +644,30 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [x] Real Grist integration test (manual testing)
 
 ## 🎯 Recent Updates
+
+### Version 0.10.0 (November 2025) - Production Readiness & Internationalization
+- **Internationalization (i18n)**: Full multi-language support
+  * LanguageProvider for state management
+  * English and French locales with 100+ strings each
+  * 5 language switcher widget variants
+  * Persistent language preferences
+  * flutter_localizations integration
+  * Date/time and number formatting per locale
+- **Enhanced Security**: Production-ready security features
+  * SecurityUtils for account lockout (5 attempts, 15-minute lockout)
+  * PasswordResetUtils for time-limited reset tokens
+  * RememberMeUtils for persistent login
+  * Already using bcrypt password hashing (from v0.1.1)
+- **Audit Logging**: Comprehensive activity tracking
+  * AuditLogger for user action logging
+  * Track LOGIN, LOGOUT, CREATE, UPDATE, DELETE, VIEW, EXPORT
+  * Store up to 1,000 most recent logs
+  * Filter logs by user, action, date range
+  * Get logs count and statistics
+- **Code Additions**: +2,000 lines of new functionality
+- **New Files**: 3 new files (language_provider.dart, language_switcher_widget.dart, security_utils.dart)
+- **New Dependency**: flutter_localizations (SDK)
+- **No Breaking Changes**: All additions are backward compatible
 
 ### Version 0.9.0 (November 2025) - Advanced Input Fields & Batch Operations
 - **Rich Text Editor**: WYSIWYG text editing with flutter_quill
