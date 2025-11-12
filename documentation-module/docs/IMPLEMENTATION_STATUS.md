@@ -1,6 +1,6 @@
 # Implementation Status
 
-## Current Version: 0.6.0
+## Current Version: 0.7.0
 
 This document tracks the implementation status of the flutter_grist_widgets library.
 
@@ -227,6 +227,31 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [x] ImageGalleryWidget - Multiple image display
 - [x] Enhanced FileUploadWidget with lightbox
 
+#### Dark Mode & Theme System (NEW in 0.7.0)
+- [x] AppTheme - Supabase-inspired theme definitions
+  * Deep black backgrounds (#0E1117, #1A1A1A, #2A2A2A)
+  * High-contrast text colors for readability
+  * Vibrant accent colors (default: #3ECF8E)
+  * Complete Material 3 component theming
+  * Both dark and light theme variants
+  * Semantic colors (error, warning, success, info)
+- [x] ThemeProvider - State management for themes
+  * Theme mode switching (light/dark/system)
+  * Custom accent color support
+  * Persistent theme preferences
+  * Reactive updates via ChangeNotifier
+- [x] Theme Toggle Widgets
+  * ThemeToggleButton - Quick icon button toggle
+  * ThemeModeSelector - Segmented button for light/dark/auto
+  * ThemeModeSwitch - Clean switch widget
+  * ThemeSettingsTile - Settings tile with selector
+  * ThemeCustomizationCard - Complete theme customization UI
+- [x] Enhanced ThemeUtils
+  * createDarkTheme() and createLightTheme() methods
+  * createThemes() for both themes at once
+  * Backward compatible with existing configuration
+  * Custom accent color support
+
 #### Column Filtering (NEW in 0.5.0)
 - [x] ColumnFilter system with visual interface
   * Filter icon on each column header
@@ -323,7 +348,7 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [ ] Session timeout handling
 - [ ] Remember me functionality
 - [ ] Multi-language support (i18n)
-- [ ] Dark mode support
+- [x] Dark mode support (COMPLETED in 0.7.0)
 
 ### Advanced Field Types (Still TODO)
 - [x] Reference fields (foreign keys to other tables) (COMPLETED in 0.5.0)
@@ -347,8 +372,7 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 1. **Attachment Storage**: File attachments are handled in memory, no persistent storage yet.
 2. **Export Formats**: Currently only CSV export; Excel and PDF planned.
 3. **Offline Mode**: No offline support, requires active internet connection.
-4. **Dark Mode**: No dark mode support yet.
-5. **Rich Text Editing**: No WYSIWYG editor for rich text fields yet.
+4. **Rich Text Editing**: No WYSIWYG editor for rich text fields yet.
 
 ## 🎯 Next Steps (Priority Order)
 
@@ -369,24 +393,27 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 15. ✅ ~~Implement multi-reference fields (many-to-many)~~ (COMPLETED in v0.6.0)
 16. ✅ ~~Add responsive design system~~ (COMPLETED in v0.6.0)
 17. ✅ ~~Add image preview for attachments~~ (COMPLETED in v0.6.0)
-18. **Implement Excel/PDF export** (Next priority)
-19. **Add dark mode support**
+18. ✅ ~~Add dark mode support~~ (COMPLETED in v0.7.0)
+19. **Implement Excel/PDF export** (Next priority)
 20. Implement rich text editor
 21. Add offline mode with local storage
 22. Implement session timeout handling
 
 ## 📊 Statistics
 
-- **Total Dart Files**: 50+ (was 47+ in v0.5.0)
-- **Lines of Code**: ~14,500+ (estimated, was ~12,000 in v0.5.0)
+- **Total Dart Files**: 53+ (was 50+ in v0.6.0, 47+ in v0.5.0)
+- **Lines of Code**: ~16,000+ (estimated, was ~14,500+ in v0.6.0, ~12,000 in v0.5.0)
 - **Configuration Options**: 95+
 - **Page Types**: 4 (Front, Master, Detail, Admin)
-- **Widget Types**: 15+ (Table, Form, FileUpload, Date, Choice, Boolean, MultiSelect, Reference, MultiReference, ImagePreview, ImageGallery, Responsive components, Skeleton Loaders)
+- **Widget Types**: 20+ (Table, Form, FileUpload, Date, Choice, Boolean, MultiSelect, Reference, MultiReference, ImagePreview, ImageGallery, Theme toggles, Responsive components, Skeleton Loaders)
 - **Field Types Supported**: 18 (text, multiline, email, url, phone, integer, numeric, date, time, datetime, choice, multiselect, boolean, file, textarea, reference, multi_reference, reflist)
 - **Filter Operators**: 14 (contains, equals, notEquals, greaterThan, lessThan, between, startsWith, endsWith, isTrue, isFalse, isNull, isNotNull, inList, etc.)
 - **Export Formats**: 1 (CSV, with Excel/PDF planned)
 - **Breakpoints**: 3 (mobile < 600px, tablet < 1024px, desktop >= 1024px)
 - **Responsive Helpers**: 5+ utility functions and 4 widgets
+- **Theme Modes**: 3 (light, dark, system)
+- **Theme Toggle Widgets**: 5 (button, selector, switch, settings tile, customization card)
+- **Accent Colors**: 8 predefined (customizable)
 - **Validator Types**: 8 (all implemented)
 - **Test Files**: 12
 - **Total Tests**: 450+
@@ -407,6 +434,32 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [x] Real Grist integration test (manual testing)
 
 ## 🎯 Recent Updates
+
+### Version 0.7.0 (November 2025) - Supabase-Inspired Dark Mode & Theme System
+- **Dark Mode Implementation**: Complete Supabase-inspired dark theme
+  * Deep black backgrounds (#0E1117, #1A1A1A, #2A2A2A)
+  * High-contrast text colors for optimal readability
+  * Vibrant accent colors (default Supabase green #3ECF8E)
+  * Subtle borders and sophisticated elevations
+  * Complete Material 3 component theming
+- **Theme System**: Comprehensive theming infrastructure
+  * AppTheme with both dark and light variants
+  * ThemeProvider for state management
+  * Theme persistence with SharedPreferences
+  * Custom accent color support (8 predefined colors)
+  * System theme detection
+- **Theme Toggle Widgets**: 5 widgets for theme switching
+  * ThemeToggleButton - Quick icon button toggle
+  * ThemeModeSelector - Segmented button (light/dark/auto)
+  * ThemeModeSwitch - Clean switch widget
+  * ThemeSettingsTile - Full settings tile
+  * ThemeCustomizationCard - Complete customization UI
+- **Enhanced ThemeUtils**: New methods for dark/light theme creation
+  * Backward compatible with existing configuration
+  * Support for custom accent colors
+- **Code Additions**: +1,500 lines of theme code
+- **New Files**: 3 new files (app_theme.dart, theme_provider.dart, theme_toggle_widget.dart)
+- **No Breaking Changes**: All additions are backward compatible
 
 ### Version 0.6.0 (November 2025) - Multi-References, Responsive Design & Image Previews
 - **Multi-Reference Fields**: Complete many-to-many relationship support
@@ -502,6 +555,8 @@ The library is now in a **production-ready** state for most business application
 - **CSV export** with configurable options
 - **Responsive design system** for mobile, tablet, and desktop
 - **Image preview with lightbox** for rich media display
+- **Dark mode** with Supabase-inspired design and theme switching
+- **Theme customization** with custom accent colors and persistent preferences
 - Field validation with 8 validator types
 - Professional loading states and notifications
 - File upload capabilities with progress indicators and image previews
@@ -521,8 +576,9 @@ The library is now in a **production-ready** state for most business application
 - ✅ Apps requiring reference/foreign key relationships (one-to-many and many-to-many)
 - ✅ Multi-platform apps (mobile, tablet, desktop) with responsive design
 - ✅ Image-heavy applications with rich media support
+- ✅ Apps requiring dark mode with customizable themes
 - ✅ Prototyping and MVPs
-- ⚠️ Advanced features (offline mode, dark mode, rich text editor) still in development
+- ⚠️ Advanced features (offline mode, rich text editor) still in development
 - ⚠️ Only CSV export available (Excel/PDF coming soon)
 
-**Next Major Milestone**: Version 0.7.0 will focus on Excel/PDF export, dark mode support, and rich text editor.
+**Next Major Milestone**: Version 0.8.0 will focus on Excel/PDF export and rich text editor.

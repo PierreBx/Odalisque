@@ -1,3 +1,145 @@
+## 0.7.0
+
+### Major Feature Release - Supabase-Inspired Dark Mode & Theme System
+
+#### 🎯 Theme: Beautiful, modern dark theme with comprehensive theming support
+
+This release introduces a complete theme system inspired by Supabase's elegant dark mode design, featuring deep blacks, sophisticated greys, and vibrant accent colors for a professional, modern look.
+
+#### Dark Mode & Theme System ⭐
+* **NEW AppTheme** - Supabase-inspired theme definitions
+  * Deep black background (#0E1117) for main app surface
+  * Elegant grey surfaces (#1A1A1A, #2A2A2A) for cards and elevated components
+  * Vibrant accent colors (Supabase green #3ECF8E by default)
+  * High-contrast text colors for optimal readability
+  * Subtle borders and elevations for depth
+  * Complete Material 3 component theming
+  * Both dark and light theme variants
+* **NEW ThemeProvider** - State management for themes
+  * Theme mode switching (light/dark/system)
+  * Custom accent color support
+  * Persistent theme preferences using SharedPreferences
+  * Reactive updates via ChangeNotifier
+  * Easy integration with Provider pattern
+* **NEW Theme Toggle Widgets**
+  * ThemeToggleButton - Quick icon button toggle
+  * ThemeModeSelector - Segmented button for light/dark/auto
+  * ThemeModeSwitch - Clean switch widget
+  * ThemeSettingsTile - Full settings tile with icon and selector
+  * ThemeCustomizationCard - Complete theme customization UI
+* **Enhanced ThemeUtils**
+  * New createDarkTheme() and createLightTheme() methods
+  * createThemes() for both themes at once
+  * Backward compatible with existing configuration
+  * Support for custom accent colors
+  * Integration with new AppTheme system
+
+#### Color Palette (Dark Mode)
+* **Backgrounds**:
+  * Deepest: #0E1117
+  * Surface: #1A1A1A
+  * Elevated: #2A2A2A
+* **Borders**:
+  * Standard: #2E2E2E
+  * Subtle: #1F1F1F
+* **Text**:
+  * Primary: #F3F4F6 (high contrast)
+  * Secondary: #9CA3AF (medium contrast)
+  * Tertiary: #6B7280 (low contrast)
+* **Accent**: #3ECF8E (Supabase green)
+  * Hover: #4ADE94
+  * Bright: #5AFF9F
+* **Semantic Colors**:
+  * Error: #EF4444
+  * Warning: #F59E0B
+  * Success: #10B981
+  * Info: #3B82F6
+
+#### Developer Experience
+* All theme components exported for easy use
+* Simple integration with MaterialApp
+* Theme persistence across app restarts
+* Multiple theme toggle widget options
+* Customizable accent colors
+* System theme detection support
+* Type-safe theme access
+
+#### Usage Examples
+
+**Basic Setup:**
+```dart
+import 'package:flutter_grist_widgets/flutter_grist_widgets.dart';
+import 'package:provider/provider.dart';
+
+void main() {
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: MyApp(),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          theme: themeProvider.getTheme(isDark: false),
+          darkTheme: themeProvider.getTheme(isDark: true),
+          themeMode: themeProvider.themeMode,
+          home: HomePage(),
+        );
+      },
+    );
+  }
+}
+```
+
+**Theme Toggle in AppBar:**
+```dart
+AppBar(
+  title: Text('My App'),
+  actions: [
+    ThemeToggleButton(), // Simple icon button
+  ],
+)
+```
+
+**Theme Settings Page:**
+```dart
+ListView(
+  children: [
+    ThemeSettingsTile(
+      title: 'Appearance',
+      subtitle: 'Customize the app theme',
+    ),
+    // Or use the full customization card
+    ThemeCustomizationCard(
+      showAccentColorPicker: true,
+    ),
+  ],
+)
+```
+
+**Custom Accent Color:**
+```dart
+final themeProvider = Provider.of<ThemeProvider>(context);
+await themeProvider.setAccentColor(Colors.purple);
+```
+
+#### Breaking Changes
+* None - All changes are additive and backward compatible
+* Existing ThemeUtils.createTheme() continues to work
+
+#### Bug Fixes
+* Improved contrast ratios for accessibility
+* Better text visibility on all backgrounds
+* Consistent component styling across themes
+
+---
+
 ## 0.6.0
 
 ### Major Feature Release - Multi-References, Responsive Design & Image Previews

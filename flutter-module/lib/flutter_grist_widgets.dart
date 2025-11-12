@@ -29,6 +29,12 @@ export 'src/utils/field_type_builder.dart';
 export 'src/utils/column_filter_utils.dart';
 export 'src/utils/export_utils.dart';
 export 'src/utils/responsive_utils.dart';
+export 'src/utils/theme_utils.dart';
+
+// Theme exports
+export 'src/theme/app_theme.dart';
+export 'src/theme/theme_provider.dart';
+export 'src/widgets/theme_toggle_widget.dart';
 
 // Page exports
 export 'src/pages/data_create_page.dart';
