@@ -5,6 +5,7 @@ import '../widgets/field_widgets/choice_field_widget.dart';
 import '../widgets/field_widgets/boolean_field_widget.dart';
 import '../widgets/field_widgets/multi_select_field_widget.dart';
 import '../widgets/field_widgets/reference_field_widget.dart';
+import '../widgets/field_widgets/multi_reference_field_widget.dart';
 import '../widgets/file_upload_widget.dart';
 
 /// Utility class for building form fields based on field type and configuration.
@@ -200,6 +201,43 @@ class FieldTypeBuilder {
           hint: fieldConfig['hint'] as String?,
           displaySeparator: fieldConfig['display_separator'] as String? ?? ' - ',
           showClearButton: fieldConfig['show_clear_button'] as bool? ?? true,
+        );
+
+      case 'multi_reference':
+      case 'reflist':
+        final referenceTable = fieldConfig['reference_table'] as String?;
+        final displayFields =
+            (fieldConfig['display_fields'] as List<dynamic>?)?.cast<String>() ??
+                ['name'];
+        final valueField = fieldConfig['value_field'] as String? ?? 'id';
+
+        if (referenceTable == null) {
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: TextFormField(
+              controller: controller,
+              decoration: InputDecoration(
+                labelText: label,
+                border: const OutlineInputBorder(),
+                errorText: 'Reference table not configured',
+              ),
+              enabled: false,
+            ),
+          );
+        }
+
+        return MultiReferenceFieldWidget(
+          label: label,
+          referenceTable: referenceTable,
+          displayFields: displayFields,
+          valueField: valueField,
+          values: value is List ? value : null,
+          onChanged: onChanged,
+          required: required,
+          enabled: enabled,
+          hint: fieldConfig['hint'] as String?,
+          displaySeparator: fieldConfig['display_separator'] as String? ?? ' - ',
+          maxSelections: fieldConfig['max_selections'] as int?,
         );
 
       case 'file':

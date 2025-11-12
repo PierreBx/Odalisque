@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:mime/mime.dart';
+import 'image_preview_widget.dart';
 
 /// A widget that allows file uploads with drag & drop support.
 class FileUploadWidget extends StatefulWidget {
@@ -239,15 +240,18 @@ class _FileUploadWidgetState extends State<FileUploadWidget> {
             ),
             child: Column(
               children: [
-                // Image preview
+                // Image preview with lightbox
                 if (widget.showPreview &&
                     _isImage(_uploadedFile!.mimeType) &&
-                    _uploadedFile!.fileBytes != null)
+                    _uploadedFile!.fileBytes != null &&
+                    _uploadedFile!.toDataUrl() != null)
                   Container(
-                    constraints: const BoxConstraints(maxHeight: 200),
                     margin: const EdgeInsets.only(bottom: 16),
-                    child: Image.memory(
-                      _uploadedFile!.fileBytes!,
+                    child: ImagePreviewWidget(
+                      imageSource: _uploadedFile!.toDataUrl()!,
+                      thumbnailHeight: 200,
+                      thumbnailWidth: double.infinity,
+                      enableLightbox: true,
                       fit: BoxFit.contain,
                     ),
                   ),

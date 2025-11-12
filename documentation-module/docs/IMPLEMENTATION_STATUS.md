@@ -1,6 +1,6 @@
 # Implementation Status
 
-## Current Version: 0.5.0
+## Current Version: 0.6.0
 
 This document tracks the implementation status of the flutter_grist_widgets library.
 
@@ -191,6 +191,42 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [x] Integration with FieldTypeBuilder
 - [x] Support for single references (BelongsTo)
 
+#### Multi-Reference Fields (NEW in 0.6.0)
+- [x] MultiReferenceFieldWidget - Many-to-many relationships
+  * Select multiple records from referenced tables
+  * Chip-based display of selected items
+  * Search and filter dialog
+  * Configurable maximum selections
+  * Individual item removal
+  * Works with Grist RefList columns
+- [x] Auto-detection from Grist RefList column types
+- [x] Integration with FieldTypeBuilder
+- [x] Support for many-to-many relationships
+
+#### Responsive Design (NEW in 0.6.0)
+- [x] ResponsiveUtils utility class
+  * Breakpoint detection (mobile/tablet/desktop)
+  * Helper methods for responsive values
+  * Responsive padding, spacing, font sizes
+  * Column count calculation for grids
+- [x] ResponsiveBuilder widget
+- [x] ResponsiveLayout widget
+- [x] ResponsiveGrid widget
+- [x] ResponsiveFormField widget
+
+#### Image Preview (NEW in 0.6.0)
+- [x] ImagePreviewWidget - Rich image display
+  * Thumbnail preview with configurable size
+  * Click to open lightbox viewer
+  * Support for URLs and data URLs
+  * Loading states and error handling
+- [x] ImageLightbox - Full-screen viewer
+  * Pinch to zoom (0.5x - 4x)
+  * Drag to pan
+  * Interactive viewer controls
+- [x] ImageGalleryWidget - Multiple image display
+- [x] Enhanced FileUploadWidget with lightbox
+
 #### Column Filtering (NEW in 0.5.0)
 - [x] ColumnFilter system with visual interface
   * Filter icon on each column header
@@ -288,13 +324,12 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [ ] Remember me functionality
 - [ ] Multi-language support (i18n)
 - [ ] Dark mode support
-- [ ] Responsive design optimizations
 
 ### Advanced Field Types (Still TODO)
 - [x] Reference fields (foreign keys to other tables) (COMPLETED in 0.5.0)
-- [ ] Multi-reference fields (many-to-many relationships)
+- [x] Multi-reference fields (many-to-many relationships) (COMPLETED in 0.6.0)
+- [x] Image preview for attachments (COMPLETED in 0.6.0)
 - [ ] Rich text editor (WYSIWYG editing)
-- [ ] Image preview for attachments (thumbnail display)
 - [ ] Geolocation fields (maps/coordinates)
 - [ ] Color picker fields
 - [ ] Rating/star fields
@@ -309,12 +344,11 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 
 ## 📋 Known Limitations
 
-1. **Multi-Reference Fields**: Many-to-many relationships not yet supported (planned for v0.6.0).
-2. **Attachment Storage**: File attachments are handled in memory, no persistent storage yet.
-3. **Export Formats**: Currently only CSV export; Excel and PDF planned.
-4. **Offline Mode**: No offline support, requires active internet connection.
-5. **Image Preview**: No thumbnail preview for image attachments yet.
-6. **Responsive Design**: Not fully optimized for all screen sizes yet.
+1. **Attachment Storage**: File attachments are handled in memory, no persistent storage yet.
+2. **Export Formats**: Currently only CSV export; Excel and PDF planned.
+3. **Offline Mode**: No offline support, requires active internet connection.
+4. **Dark Mode**: No dark mode support yet.
+5. **Rich Text Editing**: No WYSIWYG editor for rich text fields yet.
 
 ## 🎯 Next Steps (Priority Order)
 
@@ -332,25 +366,27 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 12. ✅ ~~Implement reference field support (foreign keys)~~ (COMPLETED in v0.5.0)
 13. ✅ ~~Add advanced filtering with multiple criteria~~ (COMPLETED in v0.5.0)
 14. ✅ ~~Implement CSV export functionality~~ (COMPLETED in v0.5.0)
-15. **Implement multi-reference fields (many-to-many)** (Next priority)
-16. **Add responsive design optimizations**
-17. Implement Excel/PDF export
-18. Add offline mode with local storage
-19. Implement session timeout handling
-20. Add dark mode support
-21. Add image preview for attachments
-22. Implement rich text editor
+15. ✅ ~~Implement multi-reference fields (many-to-many)~~ (COMPLETED in v0.6.0)
+16. ✅ ~~Add responsive design system~~ (COMPLETED in v0.6.0)
+17. ✅ ~~Add image preview for attachments~~ (COMPLETED in v0.6.0)
+18. **Implement Excel/PDF export** (Next priority)
+19. **Add dark mode support**
+20. Implement rich text editor
+21. Add offline mode with local storage
+22. Implement session timeout handling
 
 ## 📊 Statistics
 
-- **Total Dart Files**: 47+ (was 42+ in v0.4.0)
-- **Lines of Code**: ~12,000+ (estimated, was ~10,000 in v0.4.0)
-- **Configuration Options**: 90+
+- **Total Dart Files**: 50+ (was 47+ in v0.5.0)
+- **Lines of Code**: ~14,500+ (estimated, was ~12,000 in v0.5.0)
+- **Configuration Options**: 95+
 - **Page Types**: 4 (Front, Master, Detail, Admin)
-- **Widget Types**: 12+ (Table, Form, FileUpload, Date, Choice, Boolean, MultiSelect, Reference, Skeleton Loaders)
-- **Field Types Supported**: 17+ (text, multiline, email, url, phone, integer, numeric, date, time, datetime, choice, multiselect, boolean, file, textarea, reference, multi_reference)
+- **Widget Types**: 15+ (Table, Form, FileUpload, Date, Choice, Boolean, MultiSelect, Reference, MultiReference, ImagePreview, ImageGallery, Responsive components, Skeleton Loaders)
+- **Field Types Supported**: 18 (text, multiline, email, url, phone, integer, numeric, date, time, datetime, choice, multiselect, boolean, file, textarea, reference, multi_reference, reflist)
 - **Filter Operators**: 14 (contains, equals, notEquals, greaterThan, lessThan, between, startsWith, endsWith, isTrue, isFalse, isNull, isNotNull, inList, etc.)
 - **Export Formats**: 1 (CSV, with Excel/PDF planned)
+- **Breakpoints**: 3 (mobile < 600px, tablet < 1024px, desktop >= 1024px)
+- **Responsive Helpers**: 5+ utility functions and 4 widgets
 - **Validator Types**: 8 (all implemented)
 - **Test Files**: 12
 - **Total Tests**: 450+
@@ -371,6 +407,26 @@ This document tracks the implementation status of the flutter_grist_widgets libr
 - [x] Real Grist integration test (manual testing)
 
 ## 🎯 Recent Updates
+
+### Version 0.6.0 (November 2025) - Multi-References, Responsive Design & Image Previews
+- **Multi-Reference Fields**: Complete many-to-many relationship support
+  * MultiReferenceFieldWidget for selecting multiple records
+  * Chip-based display with search and filter
+  * Configurable maximum selections
+  * Works with Grist RefList columns
+- **Responsive Design System**: Comprehensive responsive utilities
+  * ResponsiveUtils with breakpoint detection
+  * ResponsiveBuilder, ResponsiveLayout, ResponsiveGrid widgets
+  * Mobile (< 600px), Tablet (< 1024px), Desktop (>= 1024px) breakpoints
+  * Helper methods for responsive values
+- **Image Preview & Lightbox**: Rich media support
+  * ImagePreviewWidget with thumbnail previews
+  * ImageLightbox with pinch-to-zoom and pan
+  * ImageGalleryWidget for multiple images
+  * Enhanced FileUploadWidget with lightbox integration
+- **Code Additions**: +2,500 lines of new functionality
+- **New Files**: 3 new files (multi_reference_field_widget.dart, responsive_utils.dart, image_preview_widget.dart)
+- **No Breaking Changes**: All additions are backward compatible
 
 ### Version 0.5.0 (November 2025) - Data Relationships & Scale Release
 - **Reference Fields (Foreign Keys)**: Complete implementation of ReferenceFieldWidget
@@ -437,20 +493,24 @@ The library is now in a **production-ready** state for most business application
 **Current State**: The library can generate fully functional apps with:
 - Authentication and session management
 - Create, Read, Update, Delete operations
-- **17+ field types** (text, numeric, date, choice, boolean, multiselect, file, reference, etc.)
-- **Reference fields** for foreign key relationships with autocomplete
+- **18 field types** (text, numeric, date, choice, boolean, multiselect, file, reference, multi_reference, etc.)
+- **Reference fields** for foreign key relationships with autocomplete (one-to-many)
+- **Multi-reference fields** for many-to-many relationships with chip-based selection
 - **Automatic field type detection** from Grist schema
 - **Server-side search, filtering, and sorting** for large datasets
 - **Advanced column filtering** with 14 operators
 - **CSV export** with configurable options
+- **Responsive design system** for mobile, tablet, and desktop
+- **Image preview with lightbox** for rich media display
 - Field validation with 8 validator types
 - Professional loading states and notifications
-- File upload capabilities with progress indicators
+- File upload capabilities with progress indicators and image previews
 - Responsive data tables with sorting and pagination
 - Conditional visibility based on user roles
 - Searchable dropdowns and multi-select fields
 - Date/time pickers with custom formats
 - Filter chips for active filters with easy removal
+- Pinch-to-zoom and pan for images
 
 **Recommended Use**:
 - ✅ Production use for business CRUD applications
@@ -458,9 +518,11 @@ The library is now in a **production-ready** state for most business application
 - ✅ Data entry and management applications with relational data
 - ✅ Admin panels and dashboards with filtering and export
 - ✅ Applications with large datasets (10,000+ records)
-- ✅ Apps requiring reference/foreign key relationships
+- ✅ Apps requiring reference/foreign key relationships (one-to-many and many-to-many)
+- ✅ Multi-platform apps (mobile, tablet, desktop) with responsive design
+- ✅ Image-heavy applications with rich media support
 - ✅ Prototyping and MVPs
-- ⚠️ Advanced features (offline mode, multi-reference fields, responsive design) still in development
+- ⚠️ Advanced features (offline mode, dark mode, rich text editor) still in development
 - ⚠️ Only CSV export available (Excel/PDF coming soon)
 
-**Next Major Milestone**: Version 0.6.0 will focus on multi-reference fields (many-to-many), responsive design optimizations, and image preview for attachments.
+**Next Major Milestone**: Version 0.7.0 will focus on Excel/PDF export, dark mode support, and rich text editor.

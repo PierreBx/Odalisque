@@ -1,3 +1,94 @@
+## 0.6.0
+
+### Major Feature Release - Multi-References, Responsive Design & Image Previews
+
+#### 🎯 Theme: Enhanced UX with many-to-many relationships, responsive layouts, and rich media support
+
+This release focuses on multi-reference fields for many-to-many relationships, responsive design for all screen sizes, and enhanced image preview capabilities with lightbox viewer.
+
+#### Multi-Reference Fields (Many-to-Many) ⭐
+* **NEW MultiReferenceFieldWidget** - Manage many-to-many relationships
+  * Select multiple records from referenced tables
+  * Chip-based display of selected items
+  * Search and filter available records
+  * Configurable maximum selections
+  * Individual item removal
+  * Works seamlessly with Grist RefList columns
+* Multi-reference field support in FieldTypeBuilder
+* Auto-detection from Grist RefList column types
+* Integration with form widgets
+
+#### Responsive Design System ⭐
+* **NEW ResponsiveUtils** utility class
+  * Breakpoint detection (mobile < 600px, tablet < 1024px, desktop >= 1024px)
+  * Helper methods for responsive values
+  * Responsive padding, spacing, and font sizes
+  * Column count calculation for grids
+* **NEW ResponsiveBuilder** widget
+  * Build different layouts based on screen size
+  * Access current breakpoint in builder
+* **NEW ResponsiveLayout** widget
+  * Show different widgets for mobile/tablet/desktop
+  * Automatic fallback to smaller breakpoints
+* **NEW ResponsiveGrid** widget
+  * Adaptive column count
+  * Configurable for each breakpoint
+* **NEW ResponsiveFormField** widget
+  * Width adaptation based on screen size
+
+#### Image Preview & Lightbox ⭐
+* **NEW ImagePreviewWidget** - Rich image display
+  * Thumbnail preview with configurable size
+  * Click to open lightbox viewer
+  * Support for URLs and data URLs (base64)
+  * Loading states and error handling
+  * Customizable border radius and fit
+* **NEW ImageLightbox** - Full-screen image viewer
+  * Pinch to zoom (0.5x - 4x)
+  * Drag to pan
+  * Interactive viewer controls
+  * Close button and instructions
+  * Black background for focus
+* **Enhanced FileUploadWidget**
+  * Integrated ImagePreviewWidget for thumbnails
+  * Lightbox view on click
+  * Better image display
+* **NEW ImageGalleryWidget**
+  * Display multiple images in grid
+  * Individual lightbox for each image
+
+#### Developer Experience
+* MultiReferenceFieldWidget, ImagePreviewWidget, and ResponsiveUtils exported
+* Comprehensive responsive design utilities
+* Reusable image components
+* Better UX for image-heavy applications
+* Type-safe breakpoint handling
+
+#### Breaking Changes
+* None - All changes are additive and backward compatible
+
+#### Bug Fixes
+* Improved image memory handling in FileUploadWidget
+* Better null safety in multi-reference fields
+
+#### YAML Configuration Additions
+```yaml
+grist:
+  form:
+    fields:
+      # Multi-reference field configuration (many-to-many)
+      - name: "team_member_ids"
+        type: "multi_reference"
+        label: "Team Members"
+        reference_table: "Users"
+        display_fields: ["name", "department"]
+        value_field: "id"
+        display_separator: " - "
+        max_selections: 5  # Optional limit
+```
+
+---
+
 ## 0.5.0
 
 ### Major Feature Release - Data Relationships & Scale
