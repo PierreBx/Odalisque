@@ -233,6 +233,114 @@ class GristService {
     }
   }
 
+  /// Auto-generates field configurations from Grist column metadata.
+  ///
+  /// This method fetches column metadata for a table and automatically
+  /// detects appropriate field types, choices, and other configuration
+  /// based on Grist column types and widget options.
+  ///
+  /// Returns a Map of fieldName -> fieldConfig suitable for use with
+  /// FieldTypeBuilder and form widgets.
+  ///
+  /// Example:
+  /// ```dart
+  /// final configs = await gristService.autoDetectFieldConfigs('Users');
+  /// // configs = {
+  /// //   'name': {'type': 'text', 'label': 'Name'},
+  /// //   'birthdate': {'type': 'date', 'label': 'Birth Date'},
+  /// //   'status': {'type': 'choice', 'label': 'Status', 'choices': ['Active', 'Inactive']},
+  /// // }
+  /// ```
+  Future<Map<String, Map<String, dynamic>>> autoDetectFieldConfigs(
+    String tableName, {
+    List<String>? includeFields,
+    List<String>? excludeFields,
+  }) async {
+    final columns = await fetchColumns(tableName);
+    final fieldConfigs = <String, Map<String, dynamic>>{};
+
+    for (var column in columns) {
+      final fieldId = column['id'] as String?;
+      if (fieldId == null) continue;
+
+      // Filter fields if specified
+      if (includeFields != null && !includeFields.contains(fieldId)) {
+        continue;
+      }
+      if (excludeFields != null && excludeFields.contains(fieldId)) {
+        continue;
+      }
+
+      final fields = column['fields'] as Map<String, dynamic>?;
+      if (fields == null) continue;
+
+      // Build field configuration
+      final config = <String, dynamic>{};
+
+      // Label from column label or ID
+      config['label'] = fields['label'] as String? ?? fieldId;
+
+      // Detect type from Grist column type
+      final gristType = fields['type'] as String?;
+      config['type'] = _mapGristTypeToFieldType(gristType, fields);
+
+      // Extract choices for Choice/ChoiceList fields
+      if (config['type'] == 'choice' || config['type'] == 'multiselect') {
+        final widgetOptions = fields['widgetOptions'] as Map<String, dynamic>?;
+        if (widgetOptions != null) {
+          final choices = widgetOptions['choices'] as List<dynamic>?;
+          if (choices != null) {
+            config['choices'] = choices.cast<String>();
+          }
+        }
+      }
+
+      // Mark formula fields as readonly
+      final isFormula = fields['isFormula'] as bool? ?? false;
+      if (isFormula) {
+        config['readonly'] = true;
+      }
+
+      fieldConfigs[fieldId] = config;
+    }
+
+    return fieldConfigs;
+  }
+
+  /// Maps Grist column type to our field type system
+  String _mapGristTypeToFieldType(
+    String? gristType,
+    Map<String, dynamic> fields,
+  ) {
+    switch (gristType?.toLowerCase()) {
+      case 'date':
+        return 'date';
+      case 'datetime':
+        return 'datetime';
+      case 'bool':
+        return 'boolean';
+      case 'int':
+        return 'integer';
+      case 'numeric':
+        return 'numeric';
+      case 'choice':
+        return 'choice';
+      case 'choicelist':
+        return 'multiselect';
+      case 'attachments':
+        return 'file';
+      case 'text':
+      default:
+        // Check widget options for multiline
+        final widgetOptions = fields['widgetOptions'] as Map<String, dynamic>?;
+        final widget = widgetOptions?['widget'] as String?;
+        if (widget == 'TextBox') {
+          return 'multiline';
+        }
+        return 'text';
+    }
+  }
+
   /// Hashes a password using bcrypt with a salt.
   /// This is suitable for production use.
   ///

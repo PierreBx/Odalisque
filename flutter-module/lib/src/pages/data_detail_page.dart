@@ -3,6 +3,10 @@ import 'package:provider/provider.dart';
 import '../config/app_config.dart';
 import '../services/grist_service.dart';
 import '../utils/validators.dart';
+import '../utils/field_type_builder.dart';
+import '../widgets/skeleton_loader.dart';
+import '../utils/notifications.dart';
+import '../widgets/file_upload_widget.dart';
 
 /// Form view for displaying and editing a single record.
 class DataDetailPage extends StatefulWidget {
@@ -29,6 +33,7 @@ class _DataDetailPageState extends State<DataDetailPage> {
   bool _isSaving = false;
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> _controllers = {};
+  final Map<String, dynamic> _fieldValues = {}; // For non-text fields (dates, bools, etc.)
   final Map<String, FieldValidators> _validators = {};
 
   @override
@@ -97,15 +102,36 @@ class _DataDetailPageState extends State<DataDetailPage> {
       final readonly = fieldConfig['readonly'] as bool? ?? false;
       if (readonly) continue;
 
-      // Initialize controller
-      _controllers[fieldName] = TextEditingController(
-        text: fields[fieldName]?.toString() ?? '',
-      );
+      final type = fieldConfig['type'] as String?;
+      final fieldValue = fields[fieldName];
+
+      // Initialize appropriate controller or value based on type
+      if (_isTextBasedField(type)) {
+        _controllers[fieldName] = TextEditingController(
+          text: fieldValue?.toString() ?? '',
+        );
+      } else {
+        // Store value for non-text fields (date, boolean, choice, etc.)
+        _fieldValues[fieldName] = fieldValue;
+      }
 
       // Initialize validators
       final validatorsList = fieldConfig['validators'] as List<dynamic>?;
       _validators[fieldName] = FieldValidators.fromList(validatorsList);
     }
+  }
+
+  bool _isTextBasedField(String? type) {
+    return type == null ||
+        type == 'text' ||
+        type == 'multiline' ||
+        type == 'textarea' ||
+        type == 'email' ||
+        type == 'url' ||
+        type == 'phone' ||
+        type == 'integer' ||
+        type == 'numeric' ||
+        type == 'number';
   }
 
   Future<void> _saveChanges() async {
@@ -126,10 +152,17 @@ class _DataDetailPageState extends State<DataDetailPage> {
         throw Exception('Table name not specified');
       }
 
-      // Collect updated fields
+      // Collect updated fields from both controllers and field values
       final updatedFields = <String, dynamic>{};
+
+      // Text-based fields
       for (var entry in _controllers.entries) {
         updatedFields[entry.key] = entry.value.text;
+      }
+
+      // Non-text fields (dates, booleans, choices, etc.)
+      for (var entry in _fieldValues.entries) {
+        updatedFields[entry.key] = entry.value;
       }
 
       final gristService = context.read<GristService>();
@@ -141,11 +174,9 @@ class _DataDetailPageState extends State<DataDetailPage> {
           _isEditing = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Record updated successfully'),
-            backgroundColor: Colors.green,
-          ),
+        AppNotifications.showSuccess(
+          context,
+          'Record updated successfully',
         );
 
         // Reload data to reflect changes
@@ -157,11 +188,9 @@ class _DataDetailPageState extends State<DataDetailPage> {
           _isSaving = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to save: $e'),
-            backgroundColor: Colors.red,
-          ),
+        AppNotifications.showError(
+          context,
+          'Failed to save: $e',
         );
       }
     }
@@ -202,11 +231,9 @@ class _DataDetailPageState extends State<DataDetailPage> {
       await gristService.deleteRecord(tableName, recordId);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Record deleted successfully'),
-            backgroundColor: Colors.green,
-          ),
+        AppNotifications.showSuccess(
+          context,
+          'Record deleted successfully',
         );
 
         // Navigate back
@@ -221,11 +248,9 @@ class _DataDetailPageState extends State<DataDetailPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to delete: $e'),
-            backgroundColor: Colors.red,
-          ),
+        AppNotifications.showError(
+          context,
+          'Failed to delete: $e',
         );
       }
     }
@@ -234,10 +259,13 @@ class _DataDetailPageState extends State<DataDetailPage> {
   void _cancelEdit() {
     setState(() {
       _isEditing = false;
-      // Reset controllers to original values
+      // Reset controllers and values to original data
       final fields = _record!['fields'] as Map<String, dynamic>? ?? {};
       for (var entry in _controllers.entries) {
         entry.value.text = fields[entry.key]?.toString() ?? '';
+      }
+      for (var entry in _fieldValues.entries) {
+        _fieldValues[entry.key] = fields[entry.key];
       }
     });
   }
@@ -245,7 +273,7 @@ class _DataDetailPageState extends State<DataDetailPage> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const FormSkeletonLoader(fieldCount: 6);
     }
 
     if (_error != null) {
@@ -327,43 +355,52 @@ class _DataDetailPageState extends State<DataDetailPage> {
               children: [
                 ...formFields.map((fieldConfig) {
                   final fieldName = fieldConfig['name'] as String?;
-                  final label = fieldConfig['label'] as String? ?? fieldName;
+                  if (fieldName == null) return const SizedBox.shrink();
+
                   final value = fields[fieldName];
                   final readonly = fieldConfig['readonly'] as bool? ?? false;
-                  final type = fieldConfig['type'] as String?;
 
-                  if (_isEditing && !readonly) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: TextFormField(
-                        controller: _controllers[fieldName],
-                        decoration: InputDecoration(
-                          labelText: label,
-                          border: const OutlineInputBorder(),
-                        ),
-                        keyboardType: _getKeyboardType(type),
-                        validator: _validators[fieldName]?.asFormValidator(),
-                        enabled: !_isSaving,
-                      ),
+                  // Use FieldTypeBuilder for both editing and readonly modes
+                  if (_isEditing) {
+                    // Make field readonly if it's configured as such
+                    final effectiveConfig = Map<String, dynamic>.from(fieldConfig);
+                    if (readonly) {
+                      effectiveConfig['readonly'] = true;
+                    }
+
+                    return FieldTypeBuilder.buildField(
+                      fieldName: fieldName,
+                      fieldConfig: effectiveConfig,
+                      controller: _controllers[fieldName],
+                      value: _fieldValues[fieldName] ?? value,
+                      onChanged: (newValue) {
+                        if (_isTextBasedField(fieldConfig['type'] as String?)) {
+                          // Text fields are handled by controller
+                        } else {
+                          // Non-text fields update _fieldValues
+                          setState(() {
+                            _fieldValues[fieldName] = newValue;
+                          });
+                        }
+                      },
+                      onFileSelected: (file) {
+                        setState(() {
+                          _fieldValues[fieldName] = file;
+                        });
+                      },
+                      enabled: !_isSaving && !readonly,
+                      validators: _validators[fieldName],
                     );
                   } else {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            label ?? '',
-                            style: Theme.of(context).textTheme.titleSmall,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            value?.toString() ?? '—',
-                            style: Theme.of(context).textTheme.bodyLarge,
-                          ),
-                          const Divider(),
-                        ],
-                      ),
+                    // Read-only view
+                    final effectiveConfig = Map<String, dynamic>.from(fieldConfig);
+                    effectiveConfig['readonly'] = true;
+
+                    return FieldTypeBuilder.buildField(
+                      fieldName: fieldName,
+                      fieldConfig: effectiveConfig,
+                      value: value,
+                      enabled: false,
                     );
                   }
                 }),
@@ -417,17 +454,4 @@ class _DataDetailPageState extends State<DataDetailPage> {
     );
   }
 
-  TextInputType _getKeyboardType(String? type) {
-    switch (type) {
-      case 'integer':
-      case 'numeric':
-        return TextInputType.number;
-      case 'email':
-        return TextInputType.emailAddress;
-      case 'url':
-        return TextInputType.url;
-      default:
-        return TextInputType.text;
-    }
-  }
 }

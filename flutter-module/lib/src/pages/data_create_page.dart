@@ -4,7 +4,9 @@ import 'package:intl/intl.dart';
 import '../config/app_config.dart';
 import '../services/grist_service.dart';
 import '../utils/validators.dart';
+import '../utils/field_type_builder.dart';
 import '../widgets/file_upload_widget.dart';
+import '../utils/notifications.dart';
 
 /// Form view for creating a new record.
 class DataCreatePage extends StatefulWidget {
@@ -26,8 +28,7 @@ class _DataCreatePageState extends State<DataCreatePage> {
   final _formKey = GlobalKey<FormState>();
   final Map<String, TextEditingController> _controllers = {};
   final Map<String, FieldValidators> _validators = {};
-  final Map<String, FileUploadResult?> _fileUploads = {};
-  final Map<String, DateTime?> _dateValues = {};
+  final Map<String, dynamic> _fieldValues = {}; // For all non-text fields
 
   @override
   void initState() {
@@ -58,15 +59,29 @@ class _DataCreatePageState extends State<DataCreatePage> {
 
       final type = fieldConfig['type'] as String?;
 
-      // Initialize appropriate controller based on type
-      if (type != 'file' && type != 'date') {
+      // Initialize appropriate controller or value based on type
+      if (_isTextBasedField(type)) {
         _controllers[fieldName] = TextEditingController();
       }
+      // Non-text fields will be stored in _fieldValues as they are updated
 
       // Initialize validators
       final validatorsList = fieldConfig['validators'] as List<dynamic>?;
       _validators[fieldName] = FieldValidators.fromList(validatorsList);
     }
+  }
+
+  bool _isTextBasedField(String? type) {
+    return type == null ||
+        type == 'text' ||
+        type == 'multiline' ||
+        type == 'textarea' ||
+        type == 'email' ||
+        type == 'url' ||
+        type == 'phone' ||
+        type == 'integer' ||
+        type == 'numeric' ||
+        type == 'number';
   }
 
   Future<void> _saveRecord() async {
@@ -90,30 +105,29 @@ class _DataCreatePageState extends State<DataCreatePage> {
       final formFields =
           (form?['fields'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
 
-      // Collect field values
+      // Collect field values from both controllers and field values
       final fields = <String, dynamic>{};
-      for (var fieldConfig in formFields) {
-        final fieldName = fieldConfig['name'] as String?;
-        if (fieldName == null) continue;
 
-        final type = fieldConfig['type'] as String?;
+      // Text-based fields
+      for (var entry in _controllers.entries) {
+        if (entry.value.text.isNotEmpty) {
+          fields[entry.key] = entry.value.text;
+        }
+      }
 
-        // Get value based on field type
-        if (type == 'file') {
-          final upload = _fileUploads[fieldName];
-          if (upload != null) {
-            // Store as data URL (base64) or file URL
-            fields[fieldName] = upload.toDataUrl() ?? upload.fileUrl;
-          }
-        } else if (type == 'date') {
-          final date = _dateValues[fieldName];
-          if (date != null) {
-            fields[fieldName] = DateFormat('yyyy-MM-dd').format(date);
-          }
-        } else {
-          final controller = _controllers[fieldName];
-          if (controller != null && controller.text.isNotEmpty) {
-            fields[fieldName] = controller.text;
+      // Non-text fields (dates, booleans, choices, files, etc.)
+      for (var entry in _fieldValues.entries) {
+        final value = entry.value;
+        if (value != null) {
+          // Special handling for different types
+          if (value is DateTime) {
+            // Format dates for Grist
+            fields[entry.key] = DateFormat('yyyy-MM-dd').format(value);
+          } else if (value is FileUploadResult) {
+            // Store file as data URL or file URL
+            fields[entry.key] = value.toDataUrl() ?? value.fileUrl;
+          } else {
+            fields[entry.key] = value;
           }
         }
       }
@@ -126,11 +140,9 @@ class _DataCreatePageState extends State<DataCreatePage> {
           _isSaving = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Record created successfully (ID: $newRecordId)'),
-            backgroundColor: Colors.green,
-          ),
+        AppNotifications.showSuccess(
+          context,
+          'Record created successfully (ID: $newRecordId)',
         );
 
         // Navigate back
@@ -147,32 +159,14 @@ class _DataCreatePageState extends State<DataCreatePage> {
           _isSaving = false;
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Failed to create record: $e'),
-            backgroundColor: Colors.red,
-          ),
+        AppNotifications.showError(
+          context,
+          'Failed to create record: $e',
         );
       }
     }
   }
 
-  Future<void> _pickDate(String fieldName) async {
-    final initialDate = _dateValues[fieldName] ?? DateTime.now();
-
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: initialDate,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-    );
-
-    if (picked != null) {
-      setState(() {
-        _dateValues[fieldName] = picked;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -199,70 +193,34 @@ class _DataCreatePageState extends State<DataCreatePage> {
 
                 ...formFields.map((fieldConfig) {
                   final fieldName = fieldConfig['name'] as String?;
-                  final label = fieldConfig['label'] as String? ?? fieldName;
-                  final readonly = fieldConfig['readonly'] as bool? ?? false;
-                  final type = fieldConfig['type'] as String?;
+                  if (fieldName == null) return const SizedBox.shrink();
 
+                  final readonly = fieldConfig['readonly'] as bool? ?? false;
                   if (readonly) return const SizedBox.shrink();
 
-                  // File upload field
-                  if (type == 'file') {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: FileUploadWidget(
-                        label: label,
-                        allowedExtensions:
-                            (fieldConfig['allowed_extensions'] as List<dynamic>?)
-                                ?.map((e) => e.toString())
-                                .toList(),
-                        maxFileSize: fieldConfig['max_file_size'] as int?,
-                        onFileSelected: (file) {
-                          _fileUploads[fieldName!] = file;
-                        },
-                      ),
-                    );
-                  }
-
-                  // Date picker field
-                  if (type == 'date') {
-                    final selectedDate = _dateValues[fieldName];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16),
-                      child: InkWell(
-                        onTap: _isSaving ? null : () => _pickDate(fieldName!),
-                        child: InputDecorator(
-                          decoration: InputDecoration(
-                            labelText: label,
-                            border: const OutlineInputBorder(),
-                            suffixIcon: const Icon(Icons.calendar_today),
-                          ),
-                          child: Text(
-                            selectedDate != null
-                                ? DateFormat('yyyy-MM-dd').format(selectedDate)
-                                : 'Select date',
-                            style: selectedDate == null
-                                ? TextStyle(color: Colors.grey.shade600)
-                                : null,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-
-                  // Regular text field
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: TextFormField(
-                      controller: _controllers[fieldName],
-                      decoration: InputDecoration(
-                        labelText: label,
-                        border: const OutlineInputBorder(),
-                      ),
-                      keyboardType: _getKeyboardType(type),
-                      validator: _validators[fieldName]?.asFormValidator(),
-                      enabled: !_isSaving,
-                      maxLines: type == 'text' ? 3 : 1,
-                    ),
+                  // Use FieldTypeBuilder to create the appropriate field widget
+                  return FieldTypeBuilder.buildField(
+                    fieldName: fieldName,
+                    fieldConfig: fieldConfig,
+                    controller: _controllers[fieldName],
+                    value: _fieldValues[fieldName],
+                    onChanged: (newValue) {
+                      if (_isTextBasedField(fieldConfig['type'] as String?)) {
+                        // Text fields are handled by controller
+                      } else {
+                        // Non-text fields update _fieldValues
+                        setState(() {
+                          _fieldValues[fieldName] = newValue;
+                        });
+                      }
+                    },
+                    onFileSelected: (file) {
+                      setState(() {
+                        _fieldValues[fieldName] = file;
+                      });
+                    },
+                    enabled: !_isSaving,
+                    validators: _validators[fieldName],
                   );
                 }),
               ],
@@ -308,17 +266,4 @@ class _DataCreatePageState extends State<DataCreatePage> {
     );
   }
 
-  TextInputType _getKeyboardType(String? type) {
-    switch (type) {
-      case 'integer':
-      case 'numeric':
-        return TextInputType.number;
-      case 'email':
-        return TextInputType.emailAddress;
-      case 'url':
-        return TextInputType.url;
-      default:
-        return TextInputType.text;
-    }
-  }
 }

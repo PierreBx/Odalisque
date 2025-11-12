@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'skeleton_loader.dart';
 
 /// Configuration for a table column.
 class TableColumnConfig {
@@ -195,7 +196,14 @@ class _GristTableWidgetState extends State<GristTableWidget> {
   @override
   Widget build(BuildContext context) {
     if (widget.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      // Get visible column labels for skeleton
+      final visibleColumns = widget.columns.where((col) => col.visible).toList();
+      final columnLabels = visibleColumns.map((col) => col.label).toList();
+
+      return DataTableSkeletonLoader(
+        rowCount: widget.rowsPerPage ?? 8,
+        columnLabels: columnLabels,
+      );
     }
 
     if (widget.error != null) {
