@@ -7,6 +7,7 @@ import 'providers/auth_provider.dart';
 import 'pages/login_page.dart';
 import 'pages/home_page.dart';
 import 'utils/theme_utils.dart';
+import 'utils/app_router.dart';
 
 /// Main application widget generated from YAML configuration.
 class GristApp extends StatelessWidget {
@@ -26,6 +27,7 @@ class GristApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final gristService = GristService(config.grist);
+    final appRouter = AppRouter(config: config);
 
     return MultiProvider(
       providers: [
@@ -40,14 +42,21 @@ class GristApp extends StatelessWidget {
       ],
       child: Consumer<AuthProvider>(
         builder: (context, authProvider, _) {
-          return MaterialApp(
+          // Show loading screen during initialization
+          if (authProvider.isLoading) {
+            return MaterialApp(
+              title: config.app.name,
+              theme: ThemeUtils.createTheme(config.theme),
+              home: const LoadingScreen(),
+              debugShowCheckedModeBanner: false,
+            );
+          }
+
+          // Use router for navigation with deep linking support
+          return MaterialApp.router(
             title: config.app.name,
             theme: ThemeUtils.createTheme(config.theme),
-            home: authProvider.isLoading
-                ? const LoadingScreen()
-                : authProvider.isAuthenticated
-                    ? HomePage(config: config)
-                    : LoginPage(config: config),
+            routerConfig: appRouter.router,
             debugShowCheckedModeBanner: false,
           );
         },

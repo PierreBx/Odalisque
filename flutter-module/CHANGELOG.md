@@ -1,10 +1,10 @@
 ## 0.12.0
 
-### Major Feature Release - Complete Admin Dashboard
+### Major Feature Release - Complete Admin Dashboard & Advanced Navigation
 
-#### 🎯 Theme: Real-time monitoring and operational visibility
+#### 🎯 Theme: Real-time monitoring, operational visibility, and deep linking
 
-This release transforms the admin dashboard into a comprehensive monitoring solution with real-time updates, performance metrics, active user tracking, and system health indicators.
+This release transforms the admin dashboard into a comprehensive monitoring solution with real-time updates, performance metrics, active user tracking, and system health indicators. It also introduces deep linking support for URL-based navigation, enabling shareable links, bookmarkable pages, and browser back/forward support.
 
 #### Real-Time Auto-Refresh ⭐
 * **NEW Auto-refresh functionality** with configurable intervals
@@ -85,6 +85,34 @@ This release transforms the admin dashboard into a comprehensive monitoring solu
   * Error tracking for failed requests
   * Real-time metrics updates
 
+#### Deep Linking & URL Navigation ⭐
+* **NEW go_router integration** - URL-based navigation
+  * Shareable URLs for specific pages and records
+  * Browser back/forward button support
+  * Bookmarkable pages
+  * URL structure: `/page/:pageId/record/:recordId`
+* **NEW AppRouter** - Centralized route configuration
+  * Home route (`/`)
+  * Login route (`/login`)
+  * Page by ID (`/page/:pageId`)
+  * Record detail (`/page/:pageId/record/:recordId`)
+  * Admin shortcut (`/admin`)
+  * Authentication-aware redirects
+  * 404 error page with home navigation
+* **NEW NavigationService** - Programmatic navigation helpers
+  * `goHome()` - Navigate to home
+  * `goToPage(pageId)` - Navigate to specific page
+  * `goToRecord(pageId, recordId)` - Navigate to specific record
+  * `goToAdmin()` - Navigate to admin dashboard
+  * `goBack()` - Go back with fallback to home
+  * `getCurrentPath()` - Get current URL path
+  * `isCurrentPath()` - Check if on specific path
+* **Enhanced HomePage** - Deep linking support
+  * `initialPageId` parameter for direct page access
+  * `initialRecordId` parameter for direct record access
+  * Automatic URL updates on navigation
+  * Backward compatible with existing navigation
+
 #### Developer Experience
 * All new utilities and widgets exported
 * Comprehensive documentation for each component
@@ -94,7 +122,7 @@ This release transforms the admin dashboard into a comprehensive monitoring solu
 * Easy integration with existing pages
 
 #### New Dependencies
-None - All features built with existing dependencies
+* `go_router: ^13.0.0` - Declarative routing and deep linking
 
 #### Usage Examples
 
@@ -145,6 +173,58 @@ health.markHealthCheckComplete();
 // Get status
 print('System status: ${health.statusString}');
 print('Health percentage: ${health.healthPercentage}%');
+```
+
+**Deep Linking - URL Examples:**
+```
+// Home page
+https://your-app.com/
+
+// Login page
+https://your-app.com/login
+
+// Specific page by ID
+https://your-app.com/page/orders
+https://your-app.com/page/customers
+
+// Specific record on a page
+https://your-app.com/page/orders/record/12345
+https://your-app.com/page/customers/record/67890
+
+// Admin dashboard (shortcut)
+https://your-app.com/admin
+```
+
+**Deep Linking - Programmatic Navigation:**
+```dart
+import 'package:odalisque/odalisque.dart';
+
+// Navigate to a specific page
+NavigationService.goToPage(context, 'orders');
+
+// Navigate to a specific record
+NavigationService.goToRecord(context, 'orders', '12345');
+
+// Navigate to admin dashboard
+NavigationService.goToAdmin(context);
+
+// Go back (with fallback to home)
+NavigationService.goBack(context);
+
+// Check current path
+if (NavigationService.isCurrentPath(context, '/admin')) {
+  print('Currently on admin dashboard');
+}
+```
+
+**Deep Linking - Shareable Links:**
+```dart
+// In your app, generate a shareable link
+final recordId = '12345';
+final shareableUrl = 'https://your-app.com/page/orders/record/$recordId';
+
+// Send via email, Slack, etc.
+// When user clicks, app opens directly to that record!
 ```
 
 #### Breaking Changes

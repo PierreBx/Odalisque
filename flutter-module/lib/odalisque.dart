@@ -51,6 +51,7 @@ export 'src/utils/batch_operations_utils.dart';
 export 'src/utils/security_utils.dart';
 export 'src/utils/performance_metrics.dart';
 export 'src/utils/system_health.dart';
+export 'src/utils/app_router.dart';
 
 // Theme exports
 export 'src/theme/app_theme.dart';
