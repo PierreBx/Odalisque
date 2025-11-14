@@ -1,0 +1,76 @@
+# Security Headers for Odalisque v0.14.0
+# Configured via Ansible deployment
+
+# Content Security Policy (CSP)
+# Prevents XSS, clickjacking, and other code injection attacks
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' {{ grist_base_url }}; frame-ancestors 'none'; base-uri 'self'; form-action 'self';" always;
+
+# X-Frame-Options
+# Prevents clickjacking attacks
+add_header X-Frame-Options "DENY" always;
+
+# X-Content-Type-Options
+# Prevents MIME-sniffing attacks
+add_header X-Content-Type-Options "nosniff" always;
+
+# X-XSS-Protection
+# Enables browser's XSS filter (legacy browsers)
+add_header X-XSS-Protection "1; mode=block" always;
+
+# Referrer-Policy
+# Controls how much referrer information is shared
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+# Permissions-Policy (formerly Feature-Policy)
+# Controls which browser features can be used
+add_header Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()" always;
+
+# Strict-Transport-Security (HSTS)
+# Forces HTTPS connections only
+# Note: Only add this header on HTTPS connections
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+# Expect-CT
+# Certificate Transparency enforcement
+add_header Expect-CT "max-age=86400, enforce" always;
+
+# Cross-Origin-Opener-Policy
+# Isolates browsing context
+add_header Cross-Origin-Opener-Policy "same-origin" always;
+
+# Cross-Origin-Embedder-Policy
+# Requires explicit opt-in for cross-origin resources
+add_header Cross-Origin-Embedder-Policy "require-corp" always;
+
+# Cross-Origin-Resource-Policy
+# Prevents other domains from reading the response
+add_header Cross-Origin-Resource-Policy "same-origin" always;
+
+# Remove server identification headers
+server_tokens off;
+more_clear_headers 'Server';
+more_clear_headers 'X-Powered-By';
+
+# Rate limiting configuration
+limit_req_zone $binary_remote_addr zone=general:10m rate=100r/m;
+limit_req_zone $binary_remote_addr zone=api:10m rate=200r/m;
+limit_req_zone $binary_remote_addr zone=auth:10m rate=10r/m;
+
+# Connection limiting
+limit_conn_zone $binary_remote_addr zone=conn_limit:10m;
+limit_conn conn_limit 10;
+
+# Request body size limits
+client_max_body_size 10M;
+client_body_buffer_size 128k;
+
+# Timeout configurations
+client_header_timeout 10s;
+client_body_timeout 10s;
+send_timeout 10s;
+keepalive_timeout 65s;
+
+# Buffer overflow prevention
+client_body_buffer_size 1k;
+client_header_buffer_size 1k;
+large_client_header_buffers 2 1k;
